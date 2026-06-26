@@ -709,6 +709,153 @@
         width: 100%;
       }
     }
+
+
+    /* Grade advancement celebration */
+    .student-item-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .promote-button {
+      padding: 7px 11px;
+      border: 1px solid rgba(121, 232, 173, 0.45);
+      border-radius: 8px;
+      color: var(--success);
+      background: rgba(121, 232, 173, 0.09);
+      font-weight: 750;
+    }
+
+    .promote-button:hover {
+      background: rgba(121, 232, 173, 0.17);
+    }
+
+    .promotion-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 7000;
+      display: none;
+      place-items: center;
+      overflow: hidden;
+      padding: 20px;
+      background:
+        radial-gradient(circle at 50% 25%, rgba(255, 183, 77, 0.28), transparent 36rem),
+        rgba(3, 6, 15, 0.93);
+      backdrop-filter: blur(10px);
+    }
+
+    .promotion-overlay.visible {
+      display: grid;
+      animation: promotionFadeIn 0.35s ease;
+    }
+
+    .promotion-card {
+      position: relative;
+      z-index: 2;
+      width: min(620px, 100%);
+      padding: 38px 28px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 24px;
+      text-align: center;
+      background: linear-gradient(145deg, rgba(30, 42, 78, 0.98), rgba(12, 17, 34, 0.98));
+      box-shadow: 0 35px 110px rgba(0, 0, 0, 0.6);
+      animation: promotionCardIn 0.65s cubic-bezier(.2, .9, .25, 1.25);
+    }
+
+    .promotion-emoji {
+      margin-bottom: 14px;
+      font-size: clamp(4rem, 16vw, 7rem);
+      line-height: 1;
+      animation: promotionBounce 1s ease-in-out infinite alternate;
+    }
+
+    .promotion-card h2 {
+      margin-bottom: 10px;
+      font-size: clamp(2.2rem, 8vw, 4.2rem);
+      letter-spacing: -2px;
+    }
+
+    .promotion-card p {
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.65;
+    }
+
+    .promotion-route {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 24px 0;
+      font-size: clamp(1.15rem, 5vw, 1.65rem);
+      font-weight: 850;
+    }
+
+    .promotion-grade {
+      padding: 11px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .promotion-arrow {
+      color: var(--accent);
+      font-size: 1.8rem;
+    }
+
+    .promotion-continue {
+      margin-top: 4px;
+      min-width: 190px;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      top: -12vh;
+      width: 10px;
+      height: 18px;
+      border-radius: 3px;
+      opacity: 0.92;
+      animation: confettiFall linear forwards;
+    }
+
+    @keyframes promotionFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes promotionCardIn {
+      from { opacity: 0; transform: translateY(35px) scale(0.82) rotate(-1deg); }
+      to { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
+    }
+
+    @keyframes promotionBounce {
+      from { transform: translateY(0) rotate(-4deg); }
+      to { transform: translateY(-10px) rotate(4deg); }
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translate3d(0, -10vh, 0) rotate(0deg); }
+      100% { transform: translate3d(var(--drift), 115vh, 0) rotate(var(--spin)); }
+    }
+
+    @media (max-width: 650px) {
+      .student-item-actions {
+        width: 100%;
+        justify-content: stretch;
+      }
+
+      .student-item-actions button {
+        flex: 1;
+      }
+
+      .promotion-card {
+        padding: 32px 19px;
+      }
+    }
+
   </style>
 </head>
 
@@ -1242,6 +1389,36 @@
     </section>
   </main>
 
+
+
+  <div
+    class="promotion-overlay"
+    id="promotionOverlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="promotionTitle"
+  >
+    <div class="promotion-card">
+      <div class="promotion-emoji">🎓</div>
+      <h2 id="promotionTitle">You advanced!</h2>
+      <p id="promotionMessage">Congratulations on moving to your next grade.</p>
+
+      <div class="promotion-route">
+        <span class="promotion-grade" id="promotionFromGrade">Previous grade</span>
+        <span class="promotion-arrow">→</span>
+        <span class="promotion-grade" id="promotionToGrade">New grade</span>
+      </div>
+
+      <button
+        class="button admin-button promotion-continue"
+        id="promotionContinueButton"
+        type="button"
+      >
+        Continue to my portal
+      </button>
+    </div>
+  </div>
+
   <footer><span id="year"></span> Donut</footer>
 
   <script type="module">
@@ -1363,6 +1540,11 @@ const elements = {
   studentSubjectCount: document.getElementById("studentSubjectCount"),
   studentDoneCount: document.getElementById("studentDoneCount"),
   studentNotDoneCount: document.getElementById("studentNotDoneCount"),
+  promotionOverlay: document.getElementById("promotionOverlay"),
+  promotionMessage: document.getElementById("promotionMessage"),
+  promotionFromGrade: document.getElementById("promotionFromGrade"),
+  promotionToGrade: document.getElementById("promotionToGrade"),
+  promotionContinueButton: document.getElementById("promotionContinueButton"),
   studentGradeContent: document.getElementById("studentGradeContent"),
   studentAnnouncementTabButton: document.getElementById("studentAnnouncementTabButton"),
   studentAnnouncementsContent: document.getElementById("studentAnnouncementsContent")
@@ -2309,6 +2491,297 @@ function renderAdmin() {
   updateScoreField();
 }
 
+
+function suggestedNextClassId(student) {
+  const currentClass = data.classes.find((item) => item.id === student.classId);
+  if (!currentClass) return "";
+
+  const match = String(currentClass.name).match(/^(.*?)(\d+)(.*)$/i);
+  if (!match) return "";
+
+  const prefix = match[1].trim().toLowerCase();
+  const currentNumber = Number(match[2]);
+  const suffix = match[3].trim().toLowerCase();
+
+  const exact = data.classes.find((item) => {
+    if (item.id === student.classId) return false;
+    const candidate = String(item.name).match(/^(.*?)(\d+)(.*)$/i);
+    if (!candidate) return false;
+    return (
+      candidate[1].trim().toLowerCase() === prefix &&
+      Number(candidate[2]) === currentNumber + 1 &&
+      candidate[3].trim().toLowerCase() === suffix
+    );
+  });
+
+  if (exact) return exact.id;
+
+  const sameNextNumber = data.classes.find((item) => {
+    if (item.id === student.classId) return false;
+    const candidate = String(item.name).match(/^(.*?)(\d+)(.*)$/i);
+    return candidate && Number(candidate[2]) === currentNumber + 1;
+  });
+
+  return sameNextNumber?.id || "";
+}
+
+function askForPromotionClass(student) {
+  return new Promise((resolve) => {
+    const availableClasses = data.classes.filter((item) => item.id !== student.classId);
+
+    if (availableClasses.length === 0) {
+      alert("Add the student's next class first, such as Grade 6.");
+      resolve(null);
+      return;
+    }
+
+    const overlay = document.createElement("div");
+    Object.assign(overlay.style, {
+      position: "fixed",
+      inset: "0",
+      zIndex: "6000",
+      display: "grid",
+      placeItems: "center",
+      padding: "20px",
+      background: "rgba(0, 0, 0, 0.78)",
+      backdropFilter: "blur(8px)"
+    });
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+
+    const form = document.createElement("form");
+    Object.assign(form.style, {
+      width: "min(470px, 100%)",
+      padding: "26px",
+      border: "1px solid rgba(255,255,255,0.18)",
+      borderRadius: "18px",
+      color: "#ffffff",
+      background: "#11182c",
+      boxShadow: "0 30px 90px rgba(0,0,0,0.55)"
+    });
+
+    const title = document.createElement("h2");
+    title.textContent = "Advance student grade";
+    title.style.marginBottom = "10px";
+
+    const description = document.createElement("p");
+    description.textContent = `${student.name} is currently in ${getClassName(student.classId)}. Select the new grade or class.`;
+    Object.assign(description.style, {
+      marginBottom: "18px",
+      color: "#aeb9d2",
+      lineHeight: "1.55"
+    });
+
+    const label = document.createElement("label");
+    label.textContent = "New grade / class";
+    Object.assign(label.style, {
+      display: "block",
+      marginBottom: "8px",
+      fontWeight: "700"
+    });
+
+    const select = document.createElement("select");
+    Object.assign(select.style, {
+      width: "100%",
+      padding: "13px 14px",
+      border: "1px solid rgba(255,255,255,0.18)",
+      borderRadius: "10px",
+      outline: "none",
+      color: "#ffffff",
+      background: "#17213b",
+      font: "inherit"
+    });
+
+    availableClasses.forEach((item) => {
+      const option = document.createElement("option");
+      option.value = item.id;
+      option.textContent = item.name;
+      option.style.color = "#111111";
+      select.appendChild(option);
+    });
+
+    const suggested = suggestedNextClassId(student);
+    if (suggested && availableClasses.some((item) => item.id === suggested)) {
+      select.value = suggested;
+    }
+
+    const note = document.createElement("p");
+    note.textContent = "The student will see a celebration animation the next time they sign in.";
+    Object.assign(note.style, {
+      marginTop: "12px",
+      color: "#79e8ad",
+      fontSize: "0.92rem",
+      lineHeight: "1.45"
+    });
+
+    const buttons = document.createElement("div");
+    Object.assign(buttons.style, {
+      display: "flex",
+      gap: "10px",
+      marginTop: "20px"
+    });
+
+    const submitButton = document.createElement("button");
+    submitButton.type = "submit";
+    submitButton.textContent = "Advance grade";
+    Object.assign(submitButton.style, {
+      flex: "1",
+      padding: "11px 16px",
+      border: "0",
+      borderRadius: "10px",
+      color: "#07140d",
+      background: "#79e8ad",
+      fontWeight: "800",
+      cursor: "pointer"
+    });
+
+    const cancelButton = document.createElement("button");
+    cancelButton.type = "button";
+    cancelButton.textContent = "Cancel";
+    Object.assign(cancelButton.style, {
+      flex: "1",
+      padding: "11px 16px",
+      border: "1px solid rgba(255,255,255,0.18)",
+      borderRadius: "10px",
+      color: "#ffffff",
+      background: "rgba(255,255,255,0.07)",
+      cursor: "pointer"
+    });
+
+    buttons.append(submitButton, cancelButton);
+    form.append(title, description, label, select, note, buttons);
+    overlay.appendChild(form);
+    document.body.appendChild(overlay);
+
+    let finished = false;
+
+    function finish(value) {
+      if (finished) return;
+      finished = true;
+      document.removeEventListener("keydown", onKeyDown);
+      overlay.remove();
+      resolve(value);
+    }
+
+    function onKeyDown(event) {
+      if (event.key === "Escape") finish(null);
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      finish(select.value || null);
+    });
+
+    cancelButton.addEventListener("click", () => finish(null));
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay) finish(null);
+    });
+    document.addEventListener("keydown", onKeyDown);
+    setTimeout(() => select.focus(), 0);
+  });
+}
+
+async function promoteStudent(studentId) {
+  const student = getStudent(studentId);
+  if (!student) {
+    alert("Student profile not found.");
+    return false;
+  }
+
+  const newClassId = await askForPromotionClass(student);
+  if (!newClassId) return false;
+
+  const newClass = data.classes.find((item) => item.id === newClassId);
+  if (!newClass) {
+    alert("The selected class no longer exists.");
+    return false;
+  }
+
+  const previousClassName = getClassName(student.classId);
+  const confirmed = confirm(
+    `Advance ${student.name} from ${previousClassName} to ${newClass.name}?`
+  );
+  if (!confirmed) return false;
+
+  await setDoc(
+    doc(db, "users", studentId),
+    {
+      classId: newClassId,
+      promotion: {
+        previousClassId: student.classId || "",
+        previousClassName,
+        newClassId,
+        newClassName: newClass.name,
+        pending: true,
+        promotedAt: serverTimestamp()
+      }
+    },
+    { merge: true }
+  );
+
+  alert(`${student.name} advanced to ${newClass.name}.`);
+  return true;
+}
+
+function createPromotionConfetti() {
+  const colors = ["#ffb74d", "#79e8ad", "#91aaff", "#ff8e8e", "#ffffff"];
+  elements.promotionOverlay
+    .querySelectorAll(".confetti-piece")
+    .forEach((item) => item.remove());
+
+  for (let index = 0; index < 70; index += 1) {
+    const piece = document.createElement("span");
+    piece.className = "confetti-piece";
+    piece.style.left = `${Math.random() * 100}%`;
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDuration = `${3.4 + Math.random() * 3.2}s`;
+    piece.style.animationDelay = `${Math.random() * 1.4}s`;
+    piece.style.setProperty("--drift", `${-120 + Math.random() * 240}px`);
+    piece.style.setProperty("--spin", `${360 + Math.random() * 900}deg`);
+    elements.promotionOverlay.appendChild(piece);
+  }
+}
+
+function showPromotionAnimation(profile) {
+  const promotion = profile?.promotion;
+  if (!promotion?.pending) return;
+
+  elements.promotionMessage.textContent = `Congratulations, ${profile.name || profile.username || "student"}! You have moved to your next grade.`;
+  elements.promotionFromGrade.textContent = promotion.previousClassName || "Previous grade";
+  elements.promotionToGrade.textContent = promotion.newClassName || getClassName(profile.classId);
+  createPromotionConfetti();
+  elements.promotionOverlay.classList.add("visible");
+}
+
+async function dismissPromotionAnimation() {
+  elements.promotionOverlay.classList.remove("visible");
+  elements.promotionOverlay
+    .querySelectorAll(".confetti-piece")
+    .forEach((item) => item.remove());
+
+  if (!auth.currentUser || currentProfile?.role !== "student" || !currentProfile?.promotion?.pending) {
+    return;
+  }
+
+  try {
+    await setDoc(
+      doc(db, "users", auth.currentUser.uid),
+      {
+        promotion: {
+          ...currentProfile.promotion,
+          pending: false
+        },
+        promotionSeenAt: serverTimestamp()
+      },
+      { merge: true }
+    );
+
+    currentProfile.promotion.pending = false;
+  } catch (error) {
+    console.error("Could not mark promotion animation as seen:", error);
+  }
+}
+
 function renderClasses() {
   if (data.classes.length === 0) {
     elements.classList.innerHTML = '<div class="empty-box">No classes added.</div>';
@@ -2346,9 +2819,14 @@ function renderStudents() {
               ${escapeHtml(item.username || "")}
             </small>
           </div>
-          <button class="mini-button" type="button" data-delete-student="${item.id}">
-            Remove data
-          </button>
+          <div class="student-item-actions">
+            <button class="promote-button" type="button" data-promote-student="${item.id}">
+              Advance grade
+            </button>
+            <button class="mini-button" type="button" data-delete-student="${item.id}">
+              Remove data
+            </button>
+          </div>
         </div>
       `
     )
@@ -3020,6 +3498,7 @@ document.getElementById("studentTabs").addEventListener("click", (event) => {
 document.body.addEventListener("click", async (event) => {
   const classId = event.target.dataset.deleteClass;
   const studentId = event.target.dataset.deleteStudent;
+  const promoteStudentId = event.target.dataset.promoteStudent;
   const subjectId = event.target.dataset.deleteSubject;
   const categoryId = event.target.dataset.deleteCategory;
   const recordId = event.target.dataset.deleteRecord;
@@ -3032,6 +3511,11 @@ document.body.addEventListener("click", async (event) => {
         return;
       }
       if (confirm("Remove this class?")) await deleteDoc(doc(db, "classes", classId));
+    }
+
+    if (promoteStudentId) {
+      const promoted = await promoteStudent(promoteStudentId);
+      if (!promoted) return;
     }
 
     if (studentId) {
@@ -3069,7 +3553,7 @@ document.body.addEventListener("click", async (event) => {
       await deleteDoc(doc(db, "announcements", announcementId));
     }
 
-    if (classId || studentId || subjectId || categoryId || recordId || announcementId) {
+    if (classId || promoteStudentId || studentId || subjectId || categoryId || recordId || announcementId) {
       await loadAdminData();
     }
   } catch (error) {
@@ -3094,6 +3578,21 @@ elements.clearAllButton.addEventListener("click", async () => {
     await loadAdminData();
   } catch (error) {
     alert(errorMessage(error));
+  }
+});
+
+
+elements.promotionContinueButton.addEventListener("click", dismissPromotionAnimation);
+
+elements.promotionOverlay.addEventListener("click", (event) => {
+  if (event.target === elements.promotionOverlay) {
+    dismissPromotionAnimation();
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && elements.promotionOverlay.classList.contains("visible")) {
+    dismissPromotionAnimation();
   }
 });
 
@@ -3131,6 +3630,11 @@ onAuthStateChanged(auth, async (user) => {
       elements.adminQuickButton.textContent = "Admin";
       await loadStudentData(user.uid);
       showView("student");
+
+      if (currentProfile.promotion?.pending) {
+        window.setTimeout(() => showPromotionAnimation(currentProfile), 180);
+      }
+
       return;
     }
 

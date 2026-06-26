@@ -9,6 +9,7 @@
   <style>
     :root {
       --bg: #070a14;
+      --bg-soft: #11182c;
       --panel: rgba(255, 255, 255, 0.075);
       --panel-solid: #11182c;
       --border: rgba(255, 255, 255, 0.16);
@@ -35,17 +36,9 @@
       min-height: 100vh;
       color: var(--text);
       background:
-        radial-gradient(
-          circle at 50% 0%,
-          #263b73,
-          transparent 38rem
-        ),
+        radial-gradient(circle at 50% 0%, #263b73, transparent 38rem),
         var(--bg);
-      font-family:
-        Inter,
-        Arial,
-        Helvetica,
-        sans-serif;
+      font-family: Inter, Arial, Helvetica, sans-serif;
     }
 
     button,
@@ -82,6 +75,13 @@
       gap: 10px;
     }
 
+    .header-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
     .button {
       display: inline-flex;
       justify-content: center;
@@ -92,10 +92,7 @@
       border-radius: 10px;
       font-weight: 750;
       text-decoration: none;
-      transition:
-        transform 0.2s ease,
-        background 0.2s ease,
-        box-shadow 0.2s ease;
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
     }
 
     .button:hover {
@@ -120,11 +117,6 @@
     .admin-button {
       color: var(--accent-text);
       background: var(--accent);
-    }
-
-    .admin-button:hover {
-      box-shadow:
-        0 10px 28px rgba(255, 183, 77, 0.25);
     }
 
     .danger-button {
@@ -172,8 +164,7 @@
 
     .login-grid {
       display: grid;
-      grid-template-columns:
-        repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 20px;
       max-width: 900px;
       margin: 42px auto 0;
@@ -185,8 +176,7 @@
       border: 1px solid var(--border);
       border-radius: 18px;
       background: rgba(17, 24, 44, 0.95);
-      box-shadow:
-        0 24px 70px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2);
       backdrop-filter: blur(12px);
     }
 
@@ -226,12 +216,11 @@
     .field input:focus,
     .field select:focus {
       border-color: var(--blue);
-      box-shadow:
-        0 0 0 3px rgba(145, 170, 255, 0.13);
+      box-shadow: 0 0 0 3px rgba(145, 170, 255, 0.13);
     }
 
     .field select option {
-      color: #111111;
+      color: #111;
     }
 
     .full-button {
@@ -269,8 +258,7 @@
 
     .summary-grid {
       display: grid;
-      grid-template-columns:
-        repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 16px;
       margin-bottom: 20px;
     }
@@ -295,8 +283,7 @@
 
     .admin-layout {
       display: grid;
-      grid-template-columns:
-        380px minmax(0, 1fr);
+      grid-template-columns: 380px minmax(0, 1fr);
       gap: 20px;
       align-items: start;
     }
@@ -513,8 +500,7 @@
       }
 
       .summary-grid {
-        grid-template-columns:
-          repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
@@ -549,6 +535,15 @@
       .section-title .button {
         width: 100%;
       }
+
+      .header-buttons {
+        width: 100%;
+        flex-direction: column;
+      }
+
+      .header-buttons .button {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -558,554 +553,243 @@
     <div class="logo">Donut</div>
 
     <div class="nav-actions">
-      <button
-        class="button secondary-button"
-        id="homeButton"
-        type="button"
-      >
-        Home
-      </button>
-
-      <button
-        class="button admin-button"
-        id="adminQuickButton"
-        type="button"
-      >
-        Admin
-      </button>
+      <button class="button secondary-button" id="homeButton" type="button">Home</button>
+      <button class="button admin-button" id="adminQuickButton" type="button">Admin</button>
     </div>
   </nav>
 
   <main>
     <section id="homeView">
       <div class="hero">
-        <div class="badge">
-          Student Grade Portal
-        </div>
-
+        <div class="badge">Student Grade Portal</div>
         <h1>Donut.</h1>
-
         <p class="hero-text">
-          Teachers can create classes, students, subjects,
-          and grade categories. Students can sign in to see
-          whether each assignment is done and view their grades.
+          Teachers can create classes, students, subjects, and grade categories.
+          Students can sign in to see whether each assignment is done and view their grades.
         </p>
       </div>
 
       <div class="login-grid">
         <section class="panel">
           <h2>Student Login</h2>
-
-          <p class="panel-note">
-            Use the username and password created by the
-            administrator.
-          </p>
+          <p class="panel-note">Use the username and password created by the administrator.</p>
 
           <form id="studentLoginForm">
             <div class="field">
-              <label for="studentUsername">
-                Username
-              </label>
-
-              <input
-                id="studentUsername"
-                type="text"
-                autocomplete="username"
-                required
-              >
+              <label for="studentUsername">Username</label>
+              <input id="studentUsername" type="text" autocomplete="username" required>
             </div>
 
             <div class="field">
-              <label for="studentPassword">
-                Password
-              </label>
-
-              <input
-                id="studentPassword"
-                type="password"
-                autocomplete="current-password"
-                required
-              >
+              <label for="studentPassword">Password</label>
+              <input id="studentPassword" type="password" autocomplete="current-password" required>
             </div>
 
-            <button
-              class="button primary-button full-button"
-              type="submit"
-            >
-              Sign In as Student
-            </button>
-
-            <div
-              class="form-message"
-              id="studentLoginMessage"
-              aria-live="polite"
-            ></div>
+            <button class="button primary-button full-button" type="submit">Sign In as Student</button>
+            <div class="form-message" id="studentLoginMessage" aria-live="polite"></div>
           </form>
         </section>
 
         <section class="panel">
           <h2>Administrator Login</h2>
-
-          <p class="panel-note">
-            Enter the administrator password.
-          </p>
+          <p class="panel-note">The current admin password is <strong>donut</strong>.</p>
 
           <form id="adminLoginForm">
             <div class="field">
-              <label for="adminPassword">
-                Admin password
-              </label>
-
-              <input
-                id="adminPassword"
-                type="password"
-                autocomplete="current-password"
-                required
-              >
+              <label for="adminPassword">Admin password</label>
+              <input id="adminPassword" type="password" autocomplete="current-password" required>
             </div>
 
-            <button
-              class="button admin-button full-button"
-              type="submit"
-            >
-              Open Admin Dashboard
-            </button>
-
-            <div
-              class="form-message"
-              id="adminLoginMessage"
-              aria-live="polite"
-            ></div>
+            <button class="button admin-button full-button" type="submit">Open Admin Dashboard</button>
+            <div class="form-message" id="adminLoginMessage" aria-live="polite"></div>
           </form>
         </section>
       </div>
     </section>
 
-    <section
-      class="dashboard hidden"
-      id="adminView"
-    >
+    <section class="dashboard hidden" id="adminView">
       <div class="dashboard-header">
         <div>
           <h2>Admin Dashboard</h2>
-
-          <p>
-            Create class names, student accounts, subjects,
-            subcategories, and grades.
-          </p>
+          <p>Create class names, student accounts, subjects, subcategories, and grades.</p>
         </div>
 
-        <button
-          class="button secondary-button"
-          id="adminLogoutButton"
-          type="button"
-        >
-          Log Out
-        </button>
+        <div class="header-buttons">
+          <a
+            class="button secondary-button"
+            href="https://takkytiggerttt.github.io/Donut/accounts.html"
+          >
+            🔑 Student Accounts
+          </a>
+
+          <button class="button secondary-button" id="adminLogoutButton" type="button">
+            Log Out
+          </button>
+        </div>
       </div>
 
       <div class="summary-grid">
         <article class="summary-card">
-          <div class="summary-label">
-            Classes
-          </div>
-
-          <div
-            class="summary-value"
-            id="classCount"
-          >
-            0
-          </div>
+          <div class="summary-label">Classes</div>
+          <div class="summary-value" id="classCount">0</div>
         </article>
 
         <article class="summary-card">
-          <div class="summary-label">
-            Students
-          </div>
-
-          <div
-            class="summary-value"
-            id="studentCount"
-          >
-            0
-          </div>
+          <div class="summary-label">Students</div>
+          <div class="summary-value" id="studentCount">0</div>
         </article>
 
         <article class="summary-card">
-          <div class="summary-label">
-            Subjects
-          </div>
-
-          <div
-            class="summary-value"
-            id="subjectCount"
-          >
-            0
-          </div>
+          <div class="summary-label">Subjects</div>
+          <div class="summary-value" id="subjectCount">0</div>
         </article>
 
         <article class="summary-card">
-          <div class="summary-label">
-            Grade items
-          </div>
-
-          <div
-            class="summary-value"
-            id="categoryCount"
-          >
-            0
-          </div>
+          <div class="summary-label">Grade items</div>
+          <div class="summary-value" id="categoryCount">0</div>
         </article>
       </div>
 
-      <div
-        class="tab-bar"
-        id="adminTabs"
-      >
-        <button
-          class="tab-button active"
-          type="button"
-          data-tab="setupTab"
-        >
-          Setup
-        </button>
-
-        <button
-          class="tab-button"
-          type="button"
-          data-tab="gradeTab"
-        >
-          Enter Grades
-        </button>
-
-        <button
-          class="tab-button"
-          type="button"
-          data-tab="recordsTab"
-        >
-          All Records
-        </button>
+      <div class="tab-bar" id="adminTabs">
+        <button class="tab-button active" type="button" data-tab="setupTab">Setup</button>
+        <button class="tab-button" type="button" data-tab="gradeTab">Enter Grades</button>
+        <button class="tab-button" type="button" data-tab="recordsTab">All Records</button>
       </div>
 
-      <section
-        class="tab-page active"
-        id="setupTab"
-      >
+      <section class="tab-page active" id="setupTab">
         <div class="admin-layout">
           <div class="stack">
             <section class="panel">
               <h3>Add Class / Grade Level</h3>
-
-              <p class="panel-note">
-                Examples: Grade 7/1, Grade 10 Science,
-                Year 1.
-              </p>
+              <p class="panel-note">Examples: Grade 7/1, Grade 10 Science, Year 1.</p>
 
               <form id="classForm">
                 <div class="field">
-                  <label for="className">
-                    Class name
-                  </label>
-
-                  <input
-                    id="className"
-                    type="text"
-                    maxlength="80"
-                    placeholder="Grade 7/1"
-                    required
-                  >
+                  <label for="className">Class name</label>
+                  <input id="className" type="text" maxlength="80" placeholder="Grade 7/1" required>
                 </div>
 
-                <button
-                  class="button admin-button full-button"
-                  type="submit"
-                >
-                  Add Class
-                </button>
+                <button class="button admin-button full-button" type="submit">Add Class</button>
               </form>
 
-              <div
-                class="list"
-                id="classList"
-              ></div>
+              <div class="list" id="classList"></div>
             </section>
 
             <section class="panel">
               <h3>Add Subject</h3>
-
-              <p class="panel-note">
-                Examples: Science, Mathematics, English.
-              </p>
+              <p class="panel-note">Examples: Science, Mathematics, English.</p>
 
               <form id="subjectForm">
                 <div class="field">
-                  <label for="subjectName">
-                    Subject name
-                  </label>
-
-                  <input
-                    id="subjectName"
-                    type="text"
-                    maxlength="80"
-                    placeholder="Science"
-                    required
-                  >
+                  <label for="subjectName">Subject name</label>
+                  <input id="subjectName" type="text" maxlength="80" placeholder="Science" required>
                 </div>
 
-                <button
-                  class="button admin-button full-button"
-                  type="submit"
-                >
-                  Add Subject
-                </button>
+                <button class="button admin-button full-button" type="submit">Add Subject</button>
               </form>
 
-              <div
-                class="list"
-                id="subjectList"
-              ></div>
+              <div class="list" id="subjectList"></div>
             </section>
           </div>
 
           <div class="stack">
             <section class="panel">
               <h3>Add Student</h3>
-
-              <p class="panel-note">
-                Students use this username and password
-                to sign in.
-              </p>
+              <p class="panel-note">Students use the username and password below to sign in.</p>
 
               <form id="studentForm">
                 <div class="field">
-                  <label for="studentName">
-                    Student name
-                  </label>
-
-                  <input
-                    id="studentName"
-                    type="text"
-                    maxlength="100"
-                    placeholder="Student name"
-                    required
-                  >
+                  <label for="studentName">Student name</label>
+                  <input id="studentName" type="text" maxlength="100" placeholder="Student name" required>
                 </div>
 
                 <div class="field">
-                  <label for="studentClass">
-                    Class / Grade level
-                  </label>
-
-                  <select
-                    id="studentClass"
-                    required
-                  ></select>
+                  <label for="studentClass">Class / Grade level</label>
+                  <select id="studentClass" required></select>
                 </div>
 
                 <div class="field">
-                  <label for="newStudentUsername">
-                    Username
-                  </label>
-
-                  <input
-                    id="newStudentUsername"
-                    type="text"
-                    maxlength="40"
-                    autocomplete="off"
-                    required
-                  >
+                  <label for="newStudentUsername">Username</label>
+                  <input id="newStudentUsername" type="text" maxlength="40" autocomplete="off" required>
                 </div>
 
                 <div class="field">
-                  <label for="newStudentPassword">
-                    Password
-                  </label>
-
-                  <input
-                    id="newStudentPassword"
-                    type="text"
-                    maxlength="60"
-                    autocomplete="off"
-                    required
-                  >
+                  <label for="newStudentPassword">Password</label>
+                  <input id="newStudentPassword" type="text" maxlength="60" autocomplete="off" required>
                 </div>
 
-                <button
-                  class="button admin-button full-button"
-                  type="submit"
-                >
-                  Add Student
-                </button>
+                <button class="button admin-button full-button" type="submit">Add Student</button>
               </form>
 
-              <div
-                class="list"
-                id="studentList"
-              ></div>
+              <div class="list" id="studentList"></div>
             </section>
 
             <section class="panel">
               <h3>Add Grade Subcategory</h3>
-
-              <p class="panel-note">
-                Example: Science → Group Work, Quiz,
-                Lab Report, Final Exam.
-              </p>
+              <p class="panel-note">Example: Science → Group Work, Quiz, Lab Report, Final Exam.</p>
 
               <form id="categoryForm">
                 <div class="field">
-                  <label for="categorySubject">
-                    Subject
-                  </label>
-
-                  <select
-                    id="categorySubject"
-                    required
-                  ></select>
+                  <label for="categorySubject">Subject</label>
+                  <select id="categorySubject" required></select>
                 </div>
 
                 <div class="field">
-                  <label for="categoryName">
-                    Subcategory / grade item name
-                  </label>
-
-                  <input
-                    id="categoryName"
-                    type="text"
-                    maxlength="100"
-                    placeholder="Group Work"
-                    required
-                  >
+                  <label for="categoryName">Subcategory / grade item name</label>
+                  <input id="categoryName" type="text" maxlength="100" placeholder="Group Work" required>
                 </div>
 
                 <div class="field">
-                  <label for="categoryMaxScore">
-                    Maximum score
-                  </label>
-
-                  <input
-                    id="categoryMaxScore"
-                    type="number"
-                    min="1"
-                    max="1000"
-                    step="1"
-                    value="100"
-                    required
-                  >
+                  <label for="categoryMaxScore">Maximum score</label>
+                  <input id="categoryMaxScore" type="number" min="1" max="1000" step="1" value="100" required>
                 </div>
 
-                <button
-                  class="button admin-button full-button"
-                  type="submit"
-                >
-                  Add Grade Item
-                </button>
+                <button class="button admin-button full-button" type="submit">Add Grade Item</button>
               </form>
 
-              <div
-                class="list"
-                id="categoryList"
-              ></div>
+              <div class="list" id="categoryList"></div>
             </section>
           </div>
         </div>
       </section>
 
-      <section
-        class="tab-page"
-        id="gradeTab"
-      >
+      <section class="tab-page" id="gradeTab">
         <div class="admin-layout">
           <section class="panel">
             <h3>Set Student Grade</h3>
-
-            <p class="panel-note">
-              Choose a student, subject, subcategory,
-              and whether the work is done.
-            </p>
+            <p class="panel-note">Choose a student, subject, subcategory, and whether the work is done.</p>
 
             <form id="recordForm">
               <div class="field">
-                <label for="recordStudent">
-                  Student
-                </label>
-
-                <select
-                  id="recordStudent"
-                  required
-                ></select>
+                <label for="recordStudent">Student</label>
+                <select id="recordStudent" required></select>
               </div>
 
               <div class="field">
-                <label for="recordSubject">
-                  Subject
-                </label>
-
-                <select
-                  id="recordSubject"
-                  required
-                ></select>
+                <label for="recordSubject">Subject</label>
+                <select id="recordSubject" required></select>
               </div>
 
               <div class="field">
-                <label for="recordCategory">
-                  Subcategory / grade item
-                </label>
-
-                <select
-                  id="recordCategory"
-                  required
-                ></select>
+                <label for="recordCategory">Subcategory / grade item</label>
+                <select id="recordCategory" required></select>
               </div>
 
               <div class="field">
-                <label for="recordStatus">
-                  Status
-                </label>
-
-                <select
-                  id="recordStatus"
-                  required
-                >
-                  <option value="not_done">
-                    Not done
-                  </option>
-
-                  <option value="done">
-                    Done
-                  </option>
+                <label for="recordStatus">Status</label>
+                <select id="recordStatus" required>
+                  <option value="not_done">Not done</option>
+                  <option value="done">Done</option>
                 </select>
               </div>
 
-              <div
-                class="field"
-                id="scoreField"
-              >
-                <label for="recordScore">
-                  Score
-                </label>
-
-                <input
-                  id="recordScore"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="Enter score"
-                >
+              <div class="field" id="scoreField">
+                <label for="recordScore">Score</label>
+                <input id="recordScore" type="number" min="0" step="0.01" placeholder="Enter score">
               </div>
 
-              <button
-                class="button admin-button full-button"
-                type="submit"
-              >
-                Save Grade
-              </button>
-
-              <div
-                class="form-message"
-                id="recordMessage"
-                aria-live="polite"
-              ></div>
+              <button class="button admin-button full-button" type="submit">Save Grade</button>
+              <div class="form-message" id="recordMessage" aria-live="polite"></div>
             </form>
           </section>
 
@@ -1113,10 +797,7 @@
             <div class="section-title">
               <div>
                 <h3>Thai 4.00 Grade Scale</h3>
-
-                <p class="panel-note">
-                  Calculated from the percentage score.
-                </p>
+                <p class="panel-note">Calculated from the percentage score.</p>
               </div>
             </div>
 
@@ -1129,55 +810,15 @@
                     <th>GPA</th>
                   </tr>
                 </thead>
-
                 <tbody>
-                  <tr>
-                    <td>80–100</td>
-                    <td>A</td>
-                    <td>4.00</td>
-                  </tr>
-
-                  <tr>
-                    <td>75–79</td>
-                    <td>B+</td>
-                    <td>3.50</td>
-                  </tr>
-
-                  <tr>
-                    <td>70–74</td>
-                    <td>B</td>
-                    <td>3.00</td>
-                  </tr>
-
-                  <tr>
-                    <td>65–69</td>
-                    <td>C+</td>
-                    <td>2.50</td>
-                  </tr>
-
-                  <tr>
-                    <td>60–64</td>
-                    <td>C</td>
-                    <td>2.00</td>
-                  </tr>
-
-                  <tr>
-                    <td>55–59</td>
-                    <td>D+</td>
-                    <td>1.50</td>
-                  </tr>
-
-                  <tr>
-                    <td>50–54</td>
-                    <td>D</td>
-                    <td>1.00</td>
-                  </tr>
-
-                  <tr>
-                    <td>Below 50</td>
-                    <td>F</td>
-                    <td>0.00</td>
-                  </tr>
+                  <tr><td>80–100</td><td>A</td><td>4.00</td></tr>
+                  <tr><td>75–79</td><td>B+</td><td>3.50</td></tr>
+                  <tr><td>70–74</td><td>B</td><td>3.00</td></tr>
+                  <tr><td>65–69</td><td>C+</td><td>2.50</td></tr>
+                  <tr><td>60–64</td><td>C</td><td>2.00</td></tr>
+                  <tr><td>55–59</td><td>D+</td><td>1.50</td></tr>
+                  <tr><td>50–54</td><td>D</td><td>1.00</td></tr>
+                  <tr><td>Below 50</td><td>F</td><td>0.00</td></tr>
                 </tbody>
               </table>
             </div>
@@ -1185,27 +826,15 @@
         </div>
       </section>
 
-      <section
-        class="tab-page"
-        id="recordsTab"
-      >
+      <section class="tab-page" id="recordsTab">
         <section class="panel">
           <div class="section-title">
             <div>
               <h3>All Student Records</h3>
-
-              <p class="panel-note">
-                Saved grades and Not done items appear here.
-              </p>
+              <p class="panel-note">Saved grades and Not done items appear here.</p>
             </div>
 
-            <button
-              class="button danger-button"
-              id="clearAllButton"
-              type="button"
-            >
-              Clear All Data
-            </button>
+            <button class="button danger-button" id="clearAllButton" type="button">Clear All Data</button>
           </div>
 
           <div class="table-wrap">
@@ -1222,105 +851,49 @@
                   <th>Action</th>
                 </tr>
               </thead>
-
               <tbody id="recordTableBody"></tbody>
             </table>
           </div>
 
-          <div
-            class="empty-box hidden"
-            id="recordEmpty"
-          >
-            No grades have been saved yet.
-          </div>
+          <div class="empty-box hidden" id="recordEmpty">No grades have been saved yet.</div>
         </section>
       </section>
     </section>
 
-    <section
-      class="dashboard hidden"
-      id="studentView"
-    >
+    <section class="dashboard hidden" id="studentView">
       <div class="dashboard-header">
         <div>
           <h2>My Grades</h2>
-
-          <p>
-            Only the grades for the signed-in student
-            are shown.
-          </p>
+          <p>Only the grades for the signed-in student are shown.</p>
         </div>
 
-        <button
-          class="button secondary-button"
-          id="studentLogoutButton"
-          type="button"
-        >
-          Log Out
-        </button>
+        <button class="button secondary-button" id="studentLogoutButton" type="button">Log Out</button>
       </div>
 
       <div class="student-welcome">
-        <h3 id="studentWelcomeName">
-          Student
-        </h3>
-
-        <p id="studentWelcomeClass">
-          Class
-        </p>
+        <h3 id="studentWelcomeName">Student</h3>
+        <p id="studentWelcomeClass">Class</p>
       </div>
 
       <div class="summary-grid">
         <article class="summary-card">
-          <div class="summary-label">
-            Overall GPA
-          </div>
-
-          <div
-            class="summary-value success-text"
-            id="studentGpa"
-          >
-            0.00
-          </div>
+          <div class="summary-label">Overall GPA</div>
+          <div class="summary-value success-text" id="studentGpa">0.00</div>
         </article>
 
         <article class="summary-card">
-          <div class="summary-label">
-            Subjects
-          </div>
-
-          <div
-            class="summary-value"
-            id="studentSubjectCount"
-          >
-            0
-          </div>
+          <div class="summary-label">Subjects</div>
+          <div class="summary-value" id="studentSubjectCount">0</div>
         </article>
 
         <article class="summary-card">
-          <div class="summary-label">
-            Done
-          </div>
-
-          <div
-            class="summary-value success-text"
-            id="studentDoneCount"
-          >
-            0
-          </div>
+          <div class="summary-label">Done</div>
+          <div class="summary-value success-text" id="studentDoneCount">0</div>
         </article>
 
         <article class="summary-card">
-          <div class="summary-label">
-            Not done
-          </div>
-
-          <div
-            class="summary-value"
-            id="studentNotDoneCount"
-          >
-            0
-          </div>
+          <div class="summary-label">Not done</div>
+          <div class="summary-value" id="studentNotDoneCount">0</div>
         </article>
       </div>
 
@@ -1328,21 +901,13 @@
     </section>
   </main>
 
-  <footer>
-    <span id="year"></span> Donut
-  </footer>
+  <footer><span id="year"></span> Donut</footer>
 
   <script>
     const ADMIN_PASSWORD = "donut";
-
-    const STORAGE_KEY =
-      "donutGradePortalDataV1";
-
-    const ADMIN_SESSION_KEY =
-      "donutAdminSession";
-
-    const STUDENT_SESSION_KEY =
-      "donutStudentSession";
+    const STORAGE_KEY = "donutGradePortalDataV1";
+    const ADMIN_SESSION_KEY = "donutAdminSession";
+    const STUDENT_SESSION_KEY = "donutStudentSession";
 
     const defaultData = {
       classes: [],
@@ -1355,272 +920,96 @@
     let data = loadData();
 
     const elements = {
-      homeView:
-        document.getElementById("homeView"),
-
-      adminView:
-        document.getElementById("adminView"),
-
-      studentView:
-        document.getElementById("studentView"),
-
-      homeButton:
-        document.getElementById("homeButton"),
-
-      adminQuickButton:
-        document.getElementById("adminQuickButton"),
-
-      adminLoginForm:
-        document.getElementById("adminLoginForm"),
-
-      adminPassword:
-        document.getElementById("adminPassword"),
-
-      adminLoginMessage:
-        document.getElementById("adminLoginMessage"),
-
-      studentLoginForm:
-        document.getElementById("studentLoginForm"),
-
-      studentUsername:
-        document.getElementById("studentUsername"),
-
-      studentPassword:
-        document.getElementById("studentPassword"),
-
-      studentLoginMessage:
-        document.getElementById(
-          "studentLoginMessage"
-        ),
-
-      adminLogoutButton:
-        document.getElementById(
-          "adminLogoutButton"
-        ),
-
-      studentLogoutButton:
-        document.getElementById(
-          "studentLogoutButton"
-        ),
-
-      classCount:
-        document.getElementById("classCount"),
-
-      studentCount:
-        document.getElementById("studentCount"),
-
-      subjectCount:
-        document.getElementById("subjectCount"),
-
-      categoryCount:
-        document.getElementById("categoryCount"),
-
-      classForm:
-        document.getElementById("classForm"),
-
-      className:
-        document.getElementById("className"),
-
-      classList:
-        document.getElementById("classList"),
-
-      subjectForm:
-        document.getElementById("subjectForm"),
-
-      subjectName:
-        document.getElementById("subjectName"),
-
-      subjectList:
-        document.getElementById("subjectList"),
-
-      studentForm:
-        document.getElementById("studentForm"),
-
-      studentName:
-        document.getElementById("studentName"),
-
-      studentClass:
-        document.getElementById("studentClass"),
-
-      newStudentUsername:
-        document.getElementById(
-          "newStudentUsername"
-        ),
-
-      newStudentPassword:
-        document.getElementById(
-          "newStudentPassword"
-        ),
-
-      studentList:
-        document.getElementById("studentList"),
-
-      categoryForm:
-        document.getElementById("categoryForm"),
-
-      categorySubject:
-        document.getElementById(
-          "categorySubject"
-        ),
-
-      categoryName:
-        document.getElementById("categoryName"),
-
-      categoryMaxScore:
-        document.getElementById(
-          "categoryMaxScore"
-        ),
-
-      categoryList:
-        document.getElementById("categoryList"),
-
-      recordForm:
-        document.getElementById("recordForm"),
-
-      recordStudent:
-        document.getElementById("recordStudent"),
-
-      recordSubject:
-        document.getElementById("recordSubject"),
-
-      recordCategory:
-        document.getElementById("recordCategory"),
-
-      recordStatus:
-        document.getElementById("recordStatus"),
-
-      recordScore:
-        document.getElementById("recordScore"),
-
-      scoreField:
-        document.getElementById("scoreField"),
-
-      recordMessage:
-        document.getElementById("recordMessage"),
-
-      recordTableBody:
-        document.getElementById(
-          "recordTableBody"
-        ),
-
-      recordEmpty:
-        document.getElementById("recordEmpty"),
-
-      clearAllButton:
-        document.getElementById("clearAllButton"),
-
-      studentWelcomeName:
-        document.getElementById(
-          "studentWelcomeName"
-        ),
-
-      studentWelcomeClass:
-        document.getElementById(
-          "studentWelcomeClass"
-        ),
-
-      studentGpa:
-        document.getElementById("studentGpa"),
-
-      studentSubjectCount:
-        document.getElementById(
-          "studentSubjectCount"
-        ),
-
-      studentDoneCount:
-        document.getElementById(
-          "studentDoneCount"
-        ),
-
-      studentNotDoneCount:
-        document.getElementById(
-          "studentNotDoneCount"
-        ),
-
-      studentGradeContent:
-        document.getElementById(
-          "studentGradeContent"
-        )
+      homeView: document.getElementById("homeView"),
+      adminView: document.getElementById("adminView"),
+      studentView: document.getElementById("studentView"),
+      homeButton: document.getElementById("homeButton"),
+      adminQuickButton: document.getElementById("adminQuickButton"),
+      adminLoginForm: document.getElementById("adminLoginForm"),
+      adminPassword: document.getElementById("adminPassword"),
+      adminLoginMessage: document.getElementById("adminLoginMessage"),
+      studentLoginForm: document.getElementById("studentLoginForm"),
+      studentUsername: document.getElementById("studentUsername"),
+      studentPassword: document.getElementById("studentPassword"),
+      studentLoginMessage: document.getElementById("studentLoginMessage"),
+      adminLogoutButton: document.getElementById("adminLogoutButton"),
+      studentLogoutButton: document.getElementById("studentLogoutButton"),
+      classCount: document.getElementById("classCount"),
+      studentCount: document.getElementById("studentCount"),
+      subjectCount: document.getElementById("subjectCount"),
+      categoryCount: document.getElementById("categoryCount"),
+      classForm: document.getElementById("classForm"),
+      className: document.getElementById("className"),
+      classList: document.getElementById("classList"),
+      subjectForm: document.getElementById("subjectForm"),
+      subjectName: document.getElementById("subjectName"),
+      subjectList: document.getElementById("subjectList"),
+      studentForm: document.getElementById("studentForm"),
+      studentName: document.getElementById("studentName"),
+      studentClass: document.getElementById("studentClass"),
+      newStudentUsername: document.getElementById("newStudentUsername"),
+      newStudentPassword: document.getElementById("newStudentPassword"),
+      studentList: document.getElementById("studentList"),
+      categoryForm: document.getElementById("categoryForm"),
+      categorySubject: document.getElementById("categorySubject"),
+      categoryName: document.getElementById("categoryName"),
+      categoryMaxScore: document.getElementById("categoryMaxScore"),
+      categoryList: document.getElementById("categoryList"),
+      recordForm: document.getElementById("recordForm"),
+      recordStudent: document.getElementById("recordStudent"),
+      recordSubject: document.getElementById("recordSubject"),
+      recordCategory: document.getElementById("recordCategory"),
+      recordStatus: document.getElementById("recordStatus"),
+      recordScore: document.getElementById("recordScore"),
+      scoreField: document.getElementById("scoreField"),
+      recordMessage: document.getElementById("recordMessage"),
+      recordTableBody: document.getElementById("recordTableBody"),
+      recordEmpty: document.getElementById("recordEmpty"),
+      clearAllButton: document.getElementById("clearAllButton"),
+      studentWelcomeName: document.getElementById("studentWelcomeName"),
+      studentWelcomeClass: document.getElementById("studentWelcomeClass"),
+      studentGpa: document.getElementById("studentGpa"),
+      studentSubjectCount: document.getElementById("studentSubjectCount"),
+      studentDoneCount: document.getElementById("studentDoneCount"),
+      studentNotDoneCount: document.getElementById("studentNotDoneCount"),
+      studentGradeContent: document.getElementById("studentGradeContent")
     };
 
-    document.getElementById(
-      "year"
-    ).textContent =
-      `© ${new Date().getFullYear()}`;
+    document.getElementById("year").textContent = `© ${new Date().getFullYear()}`;
 
     function uid() {
-      if (
-        window.crypto &&
-        typeof window.crypto.randomUUID ===
-          "function"
-      ) {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
         return window.crypto.randomUUID();
       }
 
-      return (
-        `${Date.now()}-` +
-        Math.random().toString(16).slice(2)
-      );
-    }
-
-    function cloneData(value) {
-      return JSON.parse(
-        JSON.stringify(value)
-      );
+      return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
     }
 
     function loadData() {
       try {
-        const saved =
-          localStorage.getItem(STORAGE_KEY);
-
-        if (!saved) {
-          return cloneData(defaultData);
-        }
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return structuredCloneSafe(defaultData);
 
         const parsed = JSON.parse(saved);
-
         return {
-          classes:
-            Array.isArray(parsed.classes)
-              ? parsed.classes
-              : [],
-
-          students:
-            Array.isArray(parsed.students)
-              ? parsed.students
-              : [],
-
-          subjects:
-            Array.isArray(parsed.subjects)
-              ? parsed.subjects
-              : [],
-
-          categories:
-            Array.isArray(parsed.categories)
-              ? parsed.categories
-              : [],
-
-          records:
-            Array.isArray(parsed.records)
-              ? parsed.records
-              : []
+          classes: Array.isArray(parsed.classes) ? parsed.classes : [],
+          students: Array.isArray(parsed.students) ? parsed.students : [],
+          subjects: Array.isArray(parsed.subjects) ? parsed.subjects : [],
+          categories: Array.isArray(parsed.categories) ? parsed.categories : [],
+          records: Array.isArray(parsed.records) ? parsed.records : []
         };
       } catch (error) {
-        console.error(
-          "Could not load data:",
-          error
-        );
-
-        return cloneData(defaultData);
+        console.error("Could not load data:", error);
+        return structuredCloneSafe(defaultData);
       }
     }
 
+    function structuredCloneSafe(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
     function saveData() {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(data)
-      );
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
     function escapeHtml(value) {
@@ -1633,292 +1022,97 @@
     }
 
     function showView(viewName) {
-      elements.homeView.classList.toggle(
-        "hidden",
-        viewName !== "home"
-      );
-
-      elements.adminView.classList.toggle(
-        "hidden",
-        viewName !== "admin"
-      );
-
-      elements.studentView.classList.toggle(
-        "hidden",
-        viewName !== "student"
-      );
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+      elements.homeView.classList.toggle("hidden", viewName !== "home");
+      elements.adminView.classList.toggle("hidden", viewName !== "admin");
+      elements.studentView.classList.toggle("hidden", viewName !== "student");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function getClassName(classId) {
-      return (
-        data.classes.find(
-          (item) => item.id === classId
-        )?.name || "No class"
-      );
+      return data.classes.find((item) => item.id === classId)?.name || "No class";
     }
 
     function getStudent(studentId) {
-      return data.students.find(
-        (item) => item.id === studentId
-      );
+      return data.students.find((item) => item.id === studentId);
     }
 
     function getSubject(subjectId) {
-      return data.subjects.find(
-        (item) => item.id === subjectId
-      );
+      return data.subjects.find((item) => item.id === subjectId);
     }
 
     function getCategory(categoryId) {
-      return data.categories.find(
-        (item) => item.id === categoryId
-      );
+      return data.categories.find((item) => item.id === categoryId);
     }
 
     function scoreToGrade(percent) {
-      if (percent >= 80) {
-        return {
-          letter: "A",
-          points: 4.0
-        };
-      }
-
-      if (percent >= 75) {
-        return {
-          letter: "B+",
-          points: 3.5
-        };
-      }
-
-      if (percent >= 70) {
-        return {
-          letter: "B",
-          points: 3.0
-        };
-      }
-
-      if (percent >= 65) {
-        return {
-          letter: "C+",
-          points: 2.5
-        };
-      }
-
-      if (percent >= 60) {
-        return {
-          letter: "C",
-          points: 2.0
-        };
-      }
-
-      if (percent >= 55) {
-        return {
-          letter: "D+",
-          points: 1.5
-        };
-      }
-
-      if (percent >= 50) {
-        return {
-          letter: "D",
-          points: 1.0
-        };
-      }
-
-      return {
-        letter: "F",
-        points: 0.0
-      };
+      if (percent >= 80) return { letter: "A", points: 4.0 };
+      if (percent >= 75) return { letter: "B+", points: 3.5 };
+      if (percent >= 70) return { letter: "B", points: 3.0 };
+      if (percent >= 65) return { letter: "C+", points: 2.5 };
+      if (percent >= 60) return { letter: "C", points: 2.0 };
+      if (percent >= 55) return { letter: "D+", points: 1.5 };
+      if (percent >= 50) return { letter: "D", points: 1.0 };
+      return { letter: "F", points: 0.0 };
     }
 
     function calculateRecord(record) {
-      const category =
-        getCategory(record.categoryId);
+      const category = getCategory(record.categoryId);
+      if (!category || record.status !== "done") return null;
 
-      if (
-        !category ||
-        record.status !== "done"
-      ) {
-        return null;
-      }
-
-      const percent = Math.max(
-        0,
-        Math.min(
-          100,
-          (
-            Number(record.score) /
-            Number(category.maxScore)
-          ) * 100
-        )
-      );
-
+      const percent = Math.max(0, Math.min(100, (Number(record.score) / Number(category.maxScore)) * 100));
       const grade = scoreToGrade(percent);
-
-      return {
-        percent,
-        ...grade
-      };
+      return { percent, ...grade };
     }
 
-    function calculateStudentSubjectSummary(
-      studentId,
-      subjectId
-    ) {
-      const categories =
-        data.categories.filter(
-          (item) =>
-            item.subjectId === subjectId
-        );
-
+    function calculateStudentSubjectSummary(studentId, subjectId) {
+      const categories = data.categories.filter((item) => item.subjectId === subjectId);
       const doneRecords = categories
-        .map((category) => ({
-          category,
+        .map((category) => ({ category, record: data.records.find((item) => item.studentId === studentId && item.categoryId === category.id) }))
+        .filter((item) => item.record?.status === "done");
 
-          record:
-            data.records.find(
-              (item) =>
-                item.studentId === studentId &&
-                item.categoryId === category.id
-            )
-        }))
-        .filter(
-          (item) =>
-            item.record?.status === "done"
-        );
+      if (doneRecords.length === 0) return null;
 
-      if (doneRecords.length === 0) {
-        return null;
-      }
-
-      const earned = doneRecords.reduce(
-        (sum, item) =>
-          sum + Number(item.record.score),
-        0
-      );
-
-      const maximum = doneRecords.reduce(
-        (sum, item) =>
-          sum + Number(item.category.maxScore),
-        0
-      );
-
-      const percent =
-        maximum > 0
-          ? (earned / maximum) * 100
-          : 0;
-
-      return {
-        percent,
-        ...scoreToGrade(percent)
-      };
+      const earned = doneRecords.reduce((sum, item) => sum + Number(item.record.score), 0);
+      const maximum = doneRecords.reduce((sum, item) => sum + Number(item.category.maxScore), 0);
+      const percent = maximum > 0 ? (earned / maximum) * 100 : 0;
+      return { percent, ...scoreToGrade(percent) };
     }
 
-    function fillSelect(
-      select,
-      items,
-      placeholder,
-      labelBuilder
-    ) {
+    function fillSelect(select, items, placeholder, labelBuilder) {
       const currentValue = select.value;
-
-      select.innerHTML =
-        `<option value="">` +
-        `${escapeHtml(placeholder)}` +
-        `</option>`;
+      select.innerHTML = `<option value="">${escapeHtml(placeholder)}</option>`;
 
       items.forEach((item) => {
-        const option =
-          document.createElement("option");
-
+        const option = document.createElement("option");
         option.value = item.id;
-        option.textContent =
-          labelBuilder(item);
-
+        option.textContent = labelBuilder(item);
         select.appendChild(option);
       });
 
-      if (
-        items.some(
-          (item) => item.id === currentValue
-        )
-      ) {
+      if (items.some((item) => item.id === currentValue)) {
         select.value = currentValue;
       }
     }
 
     function syncSelects() {
-      fillSelect(
-        elements.studentClass,
-        data.classes,
-        "Select a class",
-        (item) => item.name
-      );
-
-      fillSelect(
-        elements.categorySubject,
-        data.subjects,
-        "Select a subject",
-        (item) => item.name
-      );
-
-      fillSelect(
-        elements.recordStudent,
-        data.students,
-        "Select a student",
-        (item) =>
-          `${item.name} — ` +
-          `${getClassName(item.classId)}`
-      );
-
-      fillSelect(
-        elements.recordSubject,
-        data.subjects,
-        "Select a subject",
-        (item) => item.name
-      );
-
+      fillSelect(elements.studentClass, data.classes, "Select a class", (item) => item.name);
+      fillSelect(elements.categorySubject, data.subjects, "Select a subject", (item) => item.name);
+      fillSelect(elements.recordStudent, data.students, "Select a student", (item) => `${item.name} — ${getClassName(item.classId)}`);
+      fillSelect(elements.recordSubject, data.subjects, "Select a subject", (item) => item.name);
       syncRecordCategories();
     }
 
     function syncRecordCategories() {
-      const subjectId =
-        elements.recordSubject.value;
-
-      const categories =
-        data.categories.filter(
-          (item) =>
-            item.subjectId === subjectId
-        );
-
-      fillSelect(
-        elements.recordCategory,
-        categories,
-        "Select a grade item",
-        (item) =>
-          `${item.name} ` +
-          `(${item.maxScore} points)`
-      );
+      const subjectId = elements.recordSubject.value;
+      const categories = data.categories.filter((item) => item.subjectId === subjectId);
+      fillSelect(elements.recordCategory, categories, "Select a grade item", (item) => `${item.name} (${item.maxScore} points)`);
     }
 
     function renderAdmin() {
-      elements.classCount.textContent =
-        data.classes.length;
-
-      elements.studentCount.textContent =
-        data.students.length;
-
-      elements.subjectCount.textContent =
-        data.subjects.length;
-
-      elements.categoryCount.textContent =
-        data.categories.length;
-
+      elements.classCount.textContent = data.classes.length;
+      elements.studentCount.textContent = data.students.length;
+      elements.subjectCount.textContent = data.subjects.length;
+      elements.categoryCount.textContent = data.categories.length;
       syncSelects();
       renderClasses();
       renderStudents();
@@ -1930,1132 +1124,443 @@
 
     function renderClasses() {
       if (data.classes.length === 0) {
-        elements.classList.innerHTML =
-          '<div class="empty-box">' +
-          "No classes added." +
-          "</div>";
-
+        elements.classList.innerHTML = '<div class="empty-box">No classes added.</div>';
         return;
       }
 
-      elements.classList.innerHTML =
-        data.classes
-          .map(
-            (item) => `
-              <div class="list-item">
-                <div>
-                  <strong>
-                    ${escapeHtml(item.name)}
-                  </strong>
-                </div>
-
-                <button
-                  class="mini-button"
-                  type="button"
-                  data-delete-class="${item.id}"
-                >
-                  Remove
-                </button>
-              </div>
-            `
-          )
-          .join("");
+      elements.classList.innerHTML = data.classes.map((item) => `
+        <div class="list-item">
+          <div><strong>${escapeHtml(item.name)}</strong></div>
+          <button class="mini-button" type="button" data-delete-class="${item.id}">Remove</button>
+        </div>
+      `).join("");
     }
 
     function renderStudents() {
       if (data.students.length === 0) {
-        elements.studentList.innerHTML =
-          '<div class="empty-box">' +
-          "No students added." +
-          "</div>";
-
+        elements.studentList.innerHTML = '<div class="empty-box">No students added.</div>';
         return;
       }
 
-      elements.studentList.innerHTML =
-        data.students
-          .map(
-            (item) => `
-              <div class="list-item">
-                <div>
-                  <strong>
-                    ${escapeHtml(item.name)}
-                  </strong>
-
-                  <small>
-                    ${escapeHtml(
-                      getClassName(item.classId)
-                    )}
-                    · Username:
-                    ${escapeHtml(item.username)}
-                  </small>
-                </div>
-
-                <button
-                  class="mini-button"
-                  type="button"
-                  data-delete-student="${item.id}"
-                >
-                  Remove
-                </button>
-              </div>
-            `
-          )
-          .join("");
+      elements.studentList.innerHTML = data.students.map((item) => `
+        <div class="list-item">
+          <div>
+            <strong>${escapeHtml(item.name)}</strong>
+            <small>${escapeHtml(getClassName(item.classId))} · Username: ${escapeHtml(item.username)}</small>
+          </div>
+          <button class="mini-button" type="button" data-delete-student="${item.id}">Remove</button>
+        </div>
+      `).join("");
     }
 
     function renderSubjects() {
       if (data.subjects.length === 0) {
-        elements.subjectList.innerHTML =
-          '<div class="empty-box">' +
-          "No subjects added." +
-          "</div>";
-
+        elements.subjectList.innerHTML = '<div class="empty-box">No subjects added.</div>';
         return;
       }
 
-      elements.subjectList.innerHTML =
-        data.subjects
-          .map((item) => {
-            const count =
-              data.categories.filter(
-                (category) =>
-                  category.subjectId === item.id
-              ).length;
-
-            return `
-              <div class="list-item">
-                <div>
-                  <strong>
-                    ${escapeHtml(item.name)}
-                  </strong>
-
-                  <small>
-                    ${count}
-                    grade item${count === 1 ? "" : "s"}
-                  </small>
-                </div>
-
-                <button
-                  class="mini-button"
-                  type="button"
-                  data-delete-subject="${item.id}"
-                >
-                  Remove
-                </button>
-              </div>
-            `;
-          })
-          .join("");
+      elements.subjectList.innerHTML = data.subjects.map((item) => {
+        const count = data.categories.filter((category) => category.subjectId === item.id).length;
+        return `
+          <div class="list-item">
+            <div>
+              <strong>${escapeHtml(item.name)}</strong>
+              <small>${count} grade item${count === 1 ? "" : "s"}</small>
+            </div>
+            <button class="mini-button" type="button" data-delete-subject="${item.id}">Remove</button>
+          </div>
+        `;
+      }).join("");
     }
 
     function renderCategories() {
       if (data.categories.length === 0) {
-        elements.categoryList.innerHTML =
-          '<div class="empty-box">' +
-          "No grade items added." +
-          "</div>";
-
+        elements.categoryList.innerHTML = '<div class="empty-box">No grade items added.</div>';
         return;
       }
 
-      elements.categoryList.innerHTML =
-        data.categories
-          .map(
-            (item) => `
-              <div class="list-item">
-                <div>
-                  <strong>
-                    ${escapeHtml(
-                      getSubject(item.subjectId)?.name ||
-                        "Unknown subject"
-                    )}
-                    →
-                    ${escapeHtml(item.name)}
-                  </strong>
-
-                  <small>
-                    Maximum score:
-                    ${escapeHtml(item.maxScore)}
-                  </small>
-                </div>
-
-                <button
-                  class="mini-button"
-                  type="button"
-                  data-delete-category="${item.id}"
-                >
-                  Remove
-                </button>
-              </div>
-            `
-          )
-          .join("");
+      elements.categoryList.innerHTML = data.categories.map((item) => `
+        <div class="list-item">
+          <div>
+            <strong>${escapeHtml(getSubject(item.subjectId)?.name || "Unknown subject")} → ${escapeHtml(item.name)}</strong>
+            <small>Maximum score: ${escapeHtml(item.maxScore)}</small>
+          </div>
+          <button class="mini-button" type="button" data-delete-category="${item.id}">Remove</button>
+        </div>
+      `).join("");
     }
 
     function renderRecords() {
       if (data.records.length === 0) {
         elements.recordTableBody.innerHTML = "";
-
-        elements.recordEmpty.classList.remove(
-          "hidden"
-        );
-
+        elements.recordEmpty.classList.remove("hidden");
         return;
       }
 
-      elements.recordEmpty.classList.add(
-        "hidden"
-      );
+      elements.recordEmpty.classList.add("hidden");
+      elements.recordTableBody.innerHTML = data.records.map((record) => {
+        const student = getStudent(record.studentId);
+        const category = getCategory(record.categoryId);
+        const subject = category ? getSubject(category.subjectId) : null;
+        const result = calculateRecord(record);
+        const scoreText = record.status === "done" && category ? `${Number(record.score).toFixed(2)} / ${Number(category.maxScore).toFixed(2)}` : "—";
+        const gradeText = result ? `${result.letter} (${result.points.toFixed(2)})` : "Not done";
 
-      elements.recordTableBody.innerHTML =
-        data.records
-          .map((record) => {
-            const student =
-              getStudent(record.studentId);
-
-            const category =
-              getCategory(record.categoryId);
-
-            const subject = category
-              ? getSubject(category.subjectId)
-              : null;
-
-            const result =
-              calculateRecord(record);
-
-            const scoreText =
-              record.status === "done" &&
-              category
-                ? `${Number(record.score).toFixed(2)} / ` +
-                  `${Number(
-                    category.maxScore
-                  ).toFixed(2)}`
-                : "—";
-
-            const gradeText = result
-              ? `${result.letter} ` +
-                `(${result.points.toFixed(2)})`
-              : "Not done";
-
-            return `
-              <tr>
-                <td>
-                  ${escapeHtml(
-                    student?.name ||
-                      "Deleted student"
-                  )}
-                </td>
-
-                <td>
-                  ${escapeHtml(
-                    student
-                      ? getClassName(
-                          student.classId
-                        )
-                      : "—"
-                  )}
-                </td>
-
-                <td>
-                  ${escapeHtml(
-                    subject?.name ||
-                      "Deleted subject"
-                  )}
-                </td>
-
-                <td>
-                  ${escapeHtml(
-                    category?.name ||
-                      "Deleted item"
-                  )}
-                </td>
-
-                <td>
-                  <span
-                    class="
-                      status-pill
-                      ${
-                        record.status === "done"
-                          ? "status-done"
-                          : "status-not-done"
-                      }
-                    "
-                  >
-                    ${
-                      record.status === "done"
-                        ? "Done"
-                        : "Not done"
-                    }
-                  </span>
-                </td>
-
-                <td>
-                  ${scoreText}
-                </td>
-
-                <td>
-                  ${escapeHtml(gradeText)}
-                </td>
-
-                <td>
-                  <button
-                    class="mini-button"
-                    type="button"
-                    data-delete-record="${record.id}"
-                  >
-                    Remove
-                  </button>
-                </td>
-              </tr>
-            `;
-          })
-          .join("");
+        return `
+          <tr>
+            <td>${escapeHtml(student?.name || "Deleted student")}</td>
+            <td>${escapeHtml(student ? getClassName(student.classId) : "—")}</td>
+            <td>${escapeHtml(subject?.name || "Deleted subject")}</td>
+            <td>${escapeHtml(category?.name || "Deleted item")}</td>
+            <td><span class="status-pill ${record.status === "done" ? "status-done" : "status-not-done"}">${record.status === "done" ? "Done" : "Not done"}</span></td>
+            <td>${scoreText}</td>
+            <td>${escapeHtml(gradeText)}</td>
+            <td><button class="mini-button" type="button" data-delete-record="${record.id}">Remove</button></td>
+          </tr>
+        `;
+      }).join("");
     }
 
     function updateScoreField() {
-      const isDone =
-        elements.recordStatus.value === "done";
-
-      elements.scoreField.classList.toggle(
-        "hidden",
-        !isDone
-      );
-
+      const isDone = elements.recordStatus.value === "done";
+      elements.scoreField.classList.toggle("hidden", !isDone);
       elements.recordScore.required = isDone;
 
       if (!isDone) {
         elements.recordScore.value = "";
       }
 
-      const category =
-        getCategory(
-          elements.recordCategory.value
-        );
-
+      const category = getCategory(elements.recordCategory.value);
       if (category) {
-        elements.recordScore.max =
-          category.maxScore;
-
-        elements.recordScore.placeholder =
-          `0 to ${category.maxScore}`;
+        elements.recordScore.max = category.maxScore;
+        elements.recordScore.placeholder = `0 to ${category.maxScore}`;
       } else {
-        elements.recordScore.removeAttribute(
-          "max"
-        );
-
-        elements.recordScore.placeholder =
-          "Enter score";
+        elements.recordScore.removeAttribute("max");
+        elements.recordScore.placeholder = "Enter score";
       }
     }
 
-    function renderStudentDashboard(
-      studentId
-    ) {
+    function renderStudentDashboard(studentId) {
       const student = getStudent(studentId);
-
       if (!student) {
-        sessionStorage.removeItem(
-          STUDENT_SESSION_KEY
-        );
-
+        sessionStorage.removeItem(STUDENT_SESSION_KEY);
         showView("home");
         return;
       }
 
-      elements.studentWelcomeName.textContent =
-        student.name;
+      elements.studentWelcomeName.textContent = student.name;
+      elements.studentWelcomeClass.textContent = getClassName(student.classId);
 
-      elements.studentWelcomeClass.textContent =
-        getClassName(student.classId);
-
-      const subjectIds = [
-        ...new Set(
-          data.categories.map(
-            (item) => item.subjectId
-          )
-        )
-      ];
-
-      const relevantRecords =
-        data.records.filter(
-          (item) =>
-            item.studentId === studentId
-        );
-
-      const doneCount =
-        relevantRecords.filter(
-          (item) =>
-            item.status === "done"
-        ).length;
-
-      const notDoneCount =
-        data.categories.length - doneCount;
+      const subjectIds = [...new Set(data.categories.map((item) => item.subjectId))];
+      const relevantRecords = data.records.filter((item) => item.studentId === studentId);
+      const doneCount = relevantRecords.filter((item) => item.status === "done").length;
+      const notDoneCount = data.categories.length - doneCount;
 
       const summaries = subjectIds
-        .map((subjectId) => ({
-          subjectId,
-
-          summary:
-            calculateStudentSubjectSummary(
-              studentId,
-              subjectId
-            )
-        }))
+        .map((subjectId) => ({ subjectId, summary: calculateStudentSubjectSummary(studentId, subjectId) }))
         .filter((item) => item.summary);
 
-      const overallGpa =
-        summaries.length > 0
-          ? summaries.reduce(
-              (sum, item) =>
-                sum + item.summary.points,
-              0
-            ) / summaries.length
-          : 0;
+      const overallGpa = summaries.length
+        ? summaries.reduce((sum, item) => sum + item.summary.points, 0) / summaries.length
+        : 0;
 
-      elements.studentGpa.textContent =
-        overallGpa.toFixed(2);
-
-      elements.studentSubjectCount.textContent =
-        subjectIds.length;
-
-      elements.studentDoneCount.textContent =
-        doneCount;
-
-      elements.studentNotDoneCount.textContent =
-        Math.max(0, notDoneCount);
+      elements.studentGpa.textContent = overallGpa.toFixed(2);
+      elements.studentSubjectCount.textContent = subjectIds.length;
+      elements.studentDoneCount.textContent = doneCount;
+      elements.studentNotDoneCount.textContent = Math.max(0, notDoneCount);
 
       if (subjectIds.length === 0) {
-        elements.studentGradeContent.innerHTML =
-          '<div class="empty-box">' +
-          "No subjects or grade items " +
-          "have been added yet." +
-          "</div>";
-
+        elements.studentGradeContent.innerHTML = '<div class="empty-box">No subjects or grade items have been added yet.</div>';
         return;
       }
 
-      elements.studentGradeContent.innerHTML =
-        subjectIds
-          .map((subjectId) => {
-            const subject =
-              getSubject(subjectId);
+      elements.studentGradeContent.innerHTML = subjectIds.map((subjectId) => {
+        const subject = getSubject(subjectId);
+        const categories = data.categories.filter((item) => item.subjectId === subjectId);
+        const summary = calculateStudentSubjectSummary(studentId, subjectId);
+        const summaryText = summary
+          ? `${summary.percent.toFixed(1)}% · ${summary.letter} · GPA ${summary.points.toFixed(2)}`
+          : "No completed work yet";
 
-            const categories =
-              data.categories.filter(
-                (item) =>
-                  item.subjectId === subjectId
-              );
+        const rows = categories.map((category) => {
+          const record = data.records.find((item) => item.studentId === studentId && item.categoryId === category.id);
+          const isDone = record?.status === "done";
+          const result = record ? calculateRecord(record) : null;
+          const scoreText = isDone ? `${Number(record.score).toFixed(2)} / ${Number(category.maxScore).toFixed(2)}` : "Not done";
+          const gradeText = result ? `${result.letter} (${result.points.toFixed(2)})` : "Not done";
 
-            const summary =
-              calculateStudentSubjectSummary(
-                studentId,
-                subjectId
-              );
+          return `
+            <tr>
+              <td>${escapeHtml(category.name)}</td>
+              <td><span class="status-pill ${isDone ? "status-done" : "status-not-done"}">${isDone ? "Done" : "Not done"}</span></td>
+              <td>${escapeHtml(scoreText)}</td>
+              <td>${escapeHtml(gradeText)}</td>
+            </tr>
+          `;
+        }).join("");
 
-            const summaryText = summary
-              ? `${summary.percent.toFixed(1)}%` +
-                ` · ${summary.letter}` +
-                ` · GPA ` +
-                `${summary.points.toFixed(2)}`
-              : "No completed work yet";
+        return `
+          <section class="subject-card">
+            <div class="subject-card-header">
+              <div>
+                <h3>${escapeHtml(subject?.name || "Unknown subject")}</h3>
+                <p>${escapeHtml(summaryText)}</p>
+              </div>
+              ${summary ? `<span class="grade-pill">${escapeHtml(summary.letter)}</span>` : ""}
+            </div>
 
-            const rows = categories
-              .map((category) => {
-                const record =
-                  data.records.find(
-                    (item) =>
-                      item.studentId ===
-                        studentId &&
-                      item.categoryId ===
-                        category.id
-                  );
-
-                const isDone =
-                  record?.status === "done";
-
-                const result = record
-                  ? calculateRecord(record)
-                  : null;
-
-                const scoreText = isDone
-                  ? `${Number(
-                      record.score
-                    ).toFixed(2)} / ` +
-                    `${Number(
-                      category.maxScore
-                    ).toFixed(2)}`
-                  : "Not done";
-
-                const gradeText = result
-                  ? `${result.letter} ` +
-                    `(${result.points.toFixed(2)})`
-                  : "Not done";
-
-                return `
+            <div class="table-wrap">
+              <table>
+                <thead>
                   <tr>
-                    <td>
-                      ${escapeHtml(category.name)}
-                    </td>
-
-                    <td>
-                      <span
-                        class="
-                          status-pill
-                          ${
-                            isDone
-                              ? "status-done"
-                              : "status-not-done"
-                          }
-                        "
-                      >
-                        ${
-                          isDone
-                            ? "Done"
-                            : "Not done"
-                        }
-                      </span>
-                    </td>
-
-                    <td>
-                      ${escapeHtml(scoreText)}
-                    </td>
-
-                    <td>
-                      ${escapeHtml(gradeText)}
-                    </td>
+                    <th>Grade item</th>
+                    <th>Status</th>
+                    <th>Score</th>
+                    <th>Grade</th>
                   </tr>
-                `;
-              })
-              .join("");
-
-            return `
-              <section class="subject-card">
-                <div class="subject-card-header">
-                  <div>
-                    <h3>
-                      ${escapeHtml(
-                        subject?.name ||
-                          "Unknown subject"
-                      )}
-                    </h3>
-
-                    <p>
-                      ${escapeHtml(summaryText)}
-                    </p>
-                  </div>
-
-                  ${
-                    summary
-                      ? `
-                        <span class="grade-pill">
-                          ${escapeHtml(
-                            summary.letter
-                          )}
-                        </span>
-                      `
-                      : ""
-                  }
-                </div>
-
-                <div class="table-wrap">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Grade item</th>
-                        <th>Status</th>
-                        <th>Score</th>
-                        <th>Grade</th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      ${rows}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-            `;
-          })
-          .join("");
+                </thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </div>
+          </section>
+        `;
+      }).join("");
     }
 
-    elements.homeButton.addEventListener(
-      "click",
-      () => {
-        showView("home");
-      }
-    );
+    elements.homeButton.addEventListener("click", () => showView("home"));
 
-    elements.adminQuickButton.addEventListener(
-      "click",
-      () => {
-        const loggedIn =
-          sessionStorage.getItem(
-            ADMIN_SESSION_KEY
-          ) === "true";
-
-        if (loggedIn) {
-          renderAdmin();
-          showView("admin");
-        } else {
-          showView("home");
-          elements.adminPassword.focus();
-        }
-      }
-    );
-
-    elements.adminLoginForm.addEventListener(
-      "submit",
-      (event) => {
-        event.preventDefault();
-
-        elements.adminLoginMessage.textContent =
-          "";
-
-        if (
-          elements.adminPassword.value !==
-          ADMIN_PASSWORD
-        ) {
-          elements.adminLoginMessage.textContent =
-            "Incorrect admin password.";
-
-          elements.adminPassword.select();
-          return;
-        }
-
-        sessionStorage.setItem(
-          ADMIN_SESSION_KEY,
-          "true"
-        );
-
-        sessionStorage.removeItem(
-          STUDENT_SESSION_KEY
-        );
-
-        elements.adminPassword.value = "";
-
+    elements.adminQuickButton.addEventListener("click", () => {
+      if (sessionStorage.getItem(ADMIN_SESSION_KEY) === "true") {
         renderAdmin();
         showView("admin");
-      }
-    );
-
-    elements.studentLoginForm.addEventListener(
-      "submit",
-      (event) => {
-        event.preventDefault();
-
-        elements.studentLoginMessage.textContent =
-          "";
-
-        const username =
-          elements.studentUsername.value
-            .trim()
-            .toLowerCase();
-
-        const password =
-          elements.studentPassword.value;
-
-        const student =
-          data.students.find(
-            (item) =>
-              item.username.toLowerCase() ===
-                username &&
-              item.password === password
-          );
-
-        if (!student) {
-          elements.studentLoginMessage.textContent =
-            "Incorrect username or password.";
-
-          return;
-        }
-
-        sessionStorage.setItem(
-          STUDENT_SESSION_KEY,
-          student.id
-        );
-
-        sessionStorage.removeItem(
-          ADMIN_SESSION_KEY
-        );
-
-        elements.studentUsername.value = "";
-        elements.studentPassword.value = "";
-
-        renderStudentDashboard(student.id);
-        showView("student");
-      }
-    );
-
-    elements.adminLogoutButton.addEventListener(
-      "click",
-      () => {
-        sessionStorage.removeItem(
-          ADMIN_SESSION_KEY
-        );
-
+      } else {
         showView("home");
+        elements.adminPassword.focus();
       }
-    );
+    });
 
-    elements.studentLogoutButton.addEventListener(
-      "click",
-      () => {
-        sessionStorage.removeItem(
-          STUDENT_SESSION_KEY
-        );
+    elements.adminLoginForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      elements.adminLoginMessage.textContent = "";
 
-        showView("home");
+      if (elements.adminPassword.value !== ADMIN_PASSWORD) {
+        elements.adminLoginMessage.textContent = "Incorrect admin password.";
+        elements.adminPassword.select();
+        return;
       }
-    );
 
-    elements.classForm.addEventListener(
-      "submit",
-      (event) => {
-        event.preventDefault();
+      sessionStorage.setItem(ADMIN_SESSION_KEY, "true");
+      sessionStorage.removeItem(STUDENT_SESSION_KEY);
+      elements.adminPassword.value = "";
+      renderAdmin();
+      showView("admin");
+    });
 
-        const name =
-          elements.className.value.trim();
+    elements.studentLoginForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      elements.studentLoginMessage.textContent = "";
 
-        if (!name) {
+      const username = elements.studentUsername.value.trim().toLowerCase();
+      const password = elements.studentPassword.value;
+      const student = data.students.find((item) => item.username.toLowerCase() === username && item.password === password);
+
+      if (!student) {
+        elements.studentLoginMessage.textContent = "Incorrect username or password.";
+        return;
+      }
+
+      sessionStorage.setItem(STUDENT_SESSION_KEY, student.id);
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      elements.studentUsername.value = "";
+      elements.studentPassword.value = "";
+      renderStudentDashboard(student.id);
+      showView("student");
+    });
+
+    elements.adminLogoutButton.addEventListener("click", () => {
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      showView("home");
+    });
+
+    elements.studentLogoutButton.addEventListener("click", () => {
+      sessionStorage.removeItem(STUDENT_SESSION_KEY);
+      showView("home");
+    });
+
+    elements.classForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = elements.className.value.trim();
+      if (!name) return;
+
+      data.classes.push({ id: uid(), name });
+      elements.className.value = "";
+      saveData();
+      renderAdmin();
+    });
+
+    elements.subjectForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = elements.subjectName.value.trim();
+      if (!name) return;
+
+      data.subjects.push({ id: uid(), name });
+      elements.subjectName.value = "";
+      saveData();
+      renderAdmin();
+    });
+
+    elements.studentForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = elements.studentName.value.trim();
+      const classId = elements.studentClass.value;
+      const username = elements.newStudentUsername.value.trim();
+      const password = elements.newStudentPassword.value;
+
+      if (!name || !classId || !username || !password) return;
+
+      if (data.students.some((item) => item.username.toLowerCase() === username.toLowerCase())) {
+        alert("That username is already being used.");
+        return;
+      }
+
+      data.students.push({ id: uid(), name, classId, username, password });
+      elements.studentName.value = "";
+      elements.newStudentUsername.value = "";
+      elements.newStudentPassword.value = "";
+      saveData();
+      renderAdmin();
+    });
+
+    elements.categoryForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const subjectId = elements.categorySubject.value;
+      const name = elements.categoryName.value.trim();
+      const maxScore = Number(elements.categoryMaxScore.value);
+
+      if (!subjectId || !name || !Number.isFinite(maxScore) || maxScore <= 0) return;
+
+      data.categories.push({ id: uid(), subjectId, name, maxScore });
+      elements.categoryName.value = "";
+      elements.categoryMaxScore.value = "100";
+      saveData();
+      renderAdmin();
+    });
+
+    elements.recordSubject.addEventListener("change", () => {
+      syncRecordCategories();
+      updateScoreField();
+    });
+
+    elements.recordCategory.addEventListener("change", updateScoreField);
+    elements.recordStatus.addEventListener("change", updateScoreField);
+
+    elements.recordForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      elements.recordMessage.textContent = "";
+
+      const studentId = elements.recordStudent.value;
+      const categoryId = elements.recordCategory.value;
+      const status = elements.recordStatus.value;
+      const category = getCategory(categoryId);
+
+      if (!studentId || !category) {
+        elements.recordMessage.textContent = "Select a student, subject, and grade item.";
+        return;
+      }
+
+      let score = null;
+      if (status === "done") {
+        score = Number(elements.recordScore.value);
+
+        if (!Number.isFinite(score) || score < 0 || score > Number(category.maxScore)) {
+          elements.recordMessage.textContent = `Enter a score from 0 to ${category.maxScore}.`;
           return;
         }
+      }
 
-        data.classes.push({
-          id: uid(),
-          name
-        });
+      const existing = data.records.find((item) => item.studentId === studentId && item.categoryId === categoryId);
+      if (existing) {
+        existing.status = status;
+        existing.score = score;
+      } else {
+        data.records.push({ id: uid(), studentId, categoryId, status, score });
+      }
 
-        elements.className.value = "";
+      saveData();
+      renderAdmin();
+      elements.recordMessage.className = "form-message success-text";
+      elements.recordMessage.textContent = "Grade saved.";
+    });
 
+    document.getElementById("adminTabs").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-tab]");
+      if (!button) return;
+
+      document.querySelectorAll(".tab-button").forEach((item) => item.classList.remove("active"));
+      document.querySelectorAll(".tab-page").forEach((item) => item.classList.remove("active"));
+      button.classList.add("active");
+      document.getElementById(button.dataset.tab).classList.add("active");
+    });
+
+    document.body.addEventListener("click", (event) => {
+      const classId = event.target.dataset.deleteClass;
+      const studentId = event.target.dataset.deleteStudent;
+      const subjectId = event.target.dataset.deleteSubject;
+      const categoryId = event.target.dataset.deleteCategory;
+      const recordId = event.target.dataset.deleteRecord;
+
+      if (classId) {
+        if (data.students.some((item) => item.classId === classId)) {
+          alert("Remove or move the students in this class first.");
+          return;
+        }
+        data.classes = data.classes.filter((item) => item.id !== classId);
+      }
+
+      if (studentId) {
+        data.students = data.students.filter((item) => item.id !== studentId);
+        data.records = data.records.filter((item) => item.studentId !== studentId);
+      }
+
+      if (subjectId) {
+        const categoryIds = data.categories.filter((item) => item.subjectId === subjectId).map((item) => item.id);
+        data.subjects = data.subjects.filter((item) => item.id !== subjectId);
+        data.categories = data.categories.filter((item) => item.subjectId !== subjectId);
+        data.records = data.records.filter((item) => !categoryIds.includes(item.categoryId));
+      }
+
+      if (categoryId) {
+        data.categories = data.categories.filter((item) => item.id !== categoryId);
+        data.records = data.records.filter((item) => item.categoryId !== categoryId);
+      }
+
+      if (recordId) {
+        data.records = data.records.filter((item) => item.id !== recordId);
+      }
+
+      if (classId || studentId || subjectId || categoryId || recordId) {
         saveData();
         renderAdmin();
       }
-    );
-
-    elements.subjectForm.addEventListener(
-      "submit",
-      (event) => {
-        event.preventDefault();
-
-        const name =
-          elements.subjectName.value.trim();
-
-        if (!name) {
-          return;
-        }
-
-        data.subjects.push({
-          id: uid(),
-          name
-        });
-
-        elements.subjectName.value = "";
-
-        saveData();
-        renderAdmin();
-      }
-    );
-
-    elements.studentForm.addEventListener(
-      "submit",
-      (event) => {
-        event.preventDefault();
-
-        const name =
-          elements.studentName.value.trim();
-
-        const classId =
-          elements.studentClass.value;
-
-        const username =
-          elements.newStudentUsername.value
-            .trim();
-
-        const password =
-          elements.newStudentPassword.value;
-
-        if (
-          !name ||
-          !classId ||
-          !username ||
-          !password
-        ) {
-          return;
-        }
-
-        const usernameExists =
-          data.students.some(
-            (item) =>
-              item.username.toLowerCase() ===
-              username.toLowerCase()
-          );
-
-        if (usernameExists) {
-          alert(
-            "That username is already being used."
-          );
-
-          return;
-        }
-
-        data.students.push({
-          id: uid(),
-          name,
-          classId,
-          username,
-          password
-        });
-
-        elements.studentName.value = "";
-        elements.newStudentUsername.value = "";
-        elements.newStudentPassword.value = "";
-
-        saveData();
-        renderAdmin();
-      }
-    );
-
-    elements.categoryForm.addEventListener(
-      "submit",
-      (event) => {
-        event.preventDefault();
-
-        const subjectId =
-          elements.categorySubject.value;
-
-        const name =
-          elements.categoryName.value.trim();
-
-        const maxScore =
-          Number(
-            elements.categoryMaxScore.value
-          );
-
-        if (
-          !subjectId ||
-          !name ||
-          !Number.isFinite(maxScore) ||
-          maxScore <= 0
-        ) {
-          return;
-        }
-
-        data.categories.push({
-          id: uid(),
-          subjectId,
-          name,
-          maxScore
-        });
-
-        elements.categoryName.value = "";
-        elements.categoryMaxScore.value =
-          "100";
-
-        saveData();
-        renderAdmin();
-      }
-    );
-
-    elements.recordSubject.addEventListener(
-      "change",
-      () => {
-        syncRecordCategories();
-        updateScoreField();
-      }
-    );
-
-    elements.recordCategory.addEventListener(
-      "change",
-      updateScoreField
-    );
-
-    elements.recordStatus.addEventListener(
-      "change",
-      updateScoreField
-    );
-
-    elements.recordForm.addEventListener(
-      "submit",
-      (event) => {
-        event.preventDefault();
-
-        elements.recordMessage.className =
-          "form-message";
-
-        elements.recordMessage.textContent =
-          "";
-
-        const studentId =
-          elements.recordStudent.value;
-
-        const categoryId =
-          elements.recordCategory.value;
-
-        const status =
-          elements.recordStatus.value;
-
-        const category =
-          getCategory(categoryId);
-
-        if (!studentId || !category) {
-          elements.recordMessage.textContent =
-            "Select a student, subject, " +
-            "and grade item.";
-
-          return;
-        }
-
-        let score = null;
-
-        if (status === "done") {
-          score =
-            Number(
-              elements.recordScore.value
-            );
-
-          if (
-            !Number.isFinite(score) ||
-            score < 0 ||
-            score >
-              Number(category.maxScore)
-          ) {
-            elements.recordMessage.textContent =
-              `Enter a score from 0 to ` +
-              `${category.maxScore}.`;
-
-            return;
-          }
-        }
-
-        const existing =
-          data.records.find(
-            (item) =>
-              item.studentId === studentId &&
-              item.categoryId === categoryId
-          );
-
-        if (existing) {
-          existing.status = status;
-          existing.score = score;
-        } else {
-          data.records.push({
-            id: uid(),
-            studentId,
-            categoryId,
-            status,
-            score
-          });
-        }
-
-        saveData();
-        renderAdmin();
-
-        elements.recordMessage.className =
-          "form-message success-text";
-
-        elements.recordMessage.textContent =
-          "Grade saved.";
-      }
-    );
-
-    document
-      .getElementById("adminTabs")
-      .addEventListener(
-        "click",
-        (event) => {
-          const button =
-            event.target.closest(
-              "[data-tab]"
-            );
-
-          if (!button) {
-            return;
-          }
-
-          document
-            .querySelectorAll(".tab-button")
-            .forEach((item) => {
-              item.classList.remove("active");
-            });
-
-          document
-            .querySelectorAll(".tab-page")
-            .forEach((item) => {
-              item.classList.remove("active");
-            });
-
-          button.classList.add("active");
-
-          document
-            .getElementById(
-              button.dataset.tab
-            )
-            .classList.add("active");
-        }
-      );
-
-    document.body.addEventListener(
-      "click",
-      (event) => {
-        const classId =
-          event.target.dataset.deleteClass;
-
-        const studentId =
-          event.target.dataset.deleteStudent;
-
-        const subjectId =
-          event.target.dataset.deleteSubject;
-
-        const categoryId =
-          event.target.dataset.deleteCategory;
-
-        const recordId =
-          event.target.dataset.deleteRecord;
-
-        if (classId) {
-          const hasStudents =
-            data.students.some(
-              (item) =>
-                item.classId === classId
-            );
-
-          if (hasStudents) {
-            alert(
-              "Remove or move the students " +
-              "in this class first."
-            );
-
-            return;
-          }
-
-          data.classes =
-            data.classes.filter(
-              (item) =>
-                item.id !== classId
-            );
-        }
-
-        if (studentId) {
-          data.students =
-            data.students.filter(
-              (item) =>
-                item.id !== studentId
-            );
-
-          data.records =
-            data.records.filter(
-              (item) =>
-                item.studentId !== studentId
-            );
-        }
-
-        if (subjectId) {
-          const categoryIds =
-            data.categories
-              .filter(
-                (item) =>
-                  item.subjectId === subjectId
-              )
-              .map((item) => item.id);
-
-          data.subjects =
-            data.subjects.filter(
-              (item) =>
-                item.id !== subjectId
-            );
-
-          data.categories =
-            data.categories.filter(
-              (item) =>
-                item.subjectId !== subjectId
-            );
-
-          data.records =
-            data.records.filter(
-              (item) =>
-                !categoryIds.includes(
-                  item.categoryId
-                )
-            );
-        }
-
-        if (categoryId) {
-          data.categories =
-            data.categories.filter(
-              (item) =>
-                item.id !== categoryId
-            );
-
-          data.records =
-            data.records.filter(
-              (item) =>
-                item.categoryId !== categoryId
-            );
-        }
-
-        if (recordId) {
-          data.records =
-            data.records.filter(
-              (item) =>
-                item.id !== recordId
-            );
-        }
-
-        if (
-          classId ||
-          studentId ||
-          subjectId ||
-          categoryId ||
-          recordId
-        ) {
-          saveData();
-          renderAdmin();
-        }
-      }
-    );
-
-    elements.clearAllButton.addEventListener(
-      "click",
-      () => {
-        const confirmed = confirm(
-          "Delete every class, student, " +
-          "subject, grade item, and grade record?"
-        );
-
-        if (!confirmed) {
-          return;
-        }
-
-        data = cloneData(defaultData);
-
-        saveData();
-        renderAdmin();
-      }
-    );
-
-    const savedAdmin =
-      sessionStorage.getItem(
-        ADMIN_SESSION_KEY
-      ) === "true";
-
-    const savedStudentId =
-      sessionStorage.getItem(
-        STUDENT_SESSION_KEY
-      );
+    });
+
+    elements.clearAllButton.addEventListener("click", () => {
+      const confirmed = confirm("Delete every class, student, subject, grade item, and grade record?");
+      if (!confirmed) return;
+
+      data = structuredCloneSafe(defaultData);
+      saveData();
+      renderAdmin();
+    });
+
+    const savedAdmin = sessionStorage.getItem(ADMIN_SESSION_KEY) === "true";
+    const savedStudentId = sessionStorage.getItem(STUDENT_SESSION_KEY);
 
     if (savedAdmin) {
       renderAdmin();
       showView("admin");
-    } else if (
-      savedStudentId &&
-      getStudent(savedStudentId)
-    ) {
-      renderStudentDashboard(
-        savedStudentId
-      );
-
+    } else if (savedStudentId && getStudent(savedStudentId)) {
+      renderStudentDashboard(savedStudentId);
       showView("student");
     } else {
       showView("home");

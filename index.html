@@ -10,24 +10,27 @@
 
     <meta
         name="description"
-        content="Donut website"
+        content="Donut grade management website"
     >
 
     <title>Donut</title>
 
     <style>
         :root {
-            --background: #090d1a;
+            --background: #080b16;
             --background-light: #263b73;
+            --card: rgba(255, 255, 255, 0.075);
+            --card-hover: rgba(255, 255, 255, 0.12);
+            --border: rgba(255, 255, 255, 0.18);
             --text: #ffffff;
-            --muted: #b8c1d9;
-            --surface: rgba(255, 255, 255, 0.08);
-            --surface-hover: rgba(255, 255, 255, 0.14);
-            --border: rgba(255, 255, 255, 0.22);
-            --success: #8fffc2;
-            --danger: #ff9292;
+            --muted: #adb8d3;
+            --primary: #ffffff;
+            --primary-text: #0a1020;
             --admin: #ffb74d;
-            --admin-dark: #1c1204;
+            --admin-dark: #241503;
+            --success: #7ef0b2;
+            --danger: #ff8f8f;
+            --blue: #8ca9ff;
         }
 
         * {
@@ -42,19 +45,19 @@
 
         body {
             min-height: 100vh;
+            color: var(--text);
+            background:
+                radial-gradient(
+                    circle at 50% 0%,
+                    var(--background-light),
+                    transparent 38rem
+                ),
+                var(--background);
             font-family:
                 Inter,
                 Arial,
                 Helvetica,
                 sans-serif;
-            color: var(--text);
-            background:
-                radial-gradient(
-                    circle at top,
-                    var(--background-light),
-                    transparent 45%
-                ),
-                var(--background);
         }
 
         body.modal-open {
@@ -62,35 +65,40 @@
         }
 
         button,
-        input {
+        input,
+        select {
             font: inherit;
+        }
+
+        button {
+            cursor: pointer;
         }
 
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: min(1100px, 100%);
+            width: min(1120px, 100%);
             margin: 0 auto;
             padding: 24px;
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: 0.5px;
+            font-size: 1.55rem;
+            font-weight: 850;
+            letter-spacing: 0.3px;
         }
 
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .nav-link {
-            padding: 10px 12px;
-            border-radius: 8px;
-            color: #dbe4ff;
+            padding: 10px 13px;
+            border-radius: 9px;
+            color: #dce4f7;
             text-decoration: none;
             transition:
                 color 0.2s ease,
@@ -99,31 +107,42 @@
 
         .nav-link:hover {
             color: var(--text);
-            background: var(--surface);
+            background: var(--card);
         }
 
-        .admin-button,
-        .button,
-        .normal-button {
+        .button {
             display: inline-flex;
             justify-content: center;
             align-items: center;
+            gap: 8px;
             padding: 12px 18px;
             border: 0;
-            border-radius: 10px;
+            border-radius: 11px;
             font-weight: 750;
-            cursor: pointer;
             text-decoration: none;
             transition:
                 transform 0.2s ease,
-                box-shadow 0.2s ease,
-                background 0.2s ease;
+                background 0.2s ease,
+                box-shadow 0.2s ease;
         }
 
-        .admin-button:hover,
-        .button:hover,
-        .normal-button:hover {
+        .button:hover {
             transform: translateY(-2px);
+        }
+
+        .primary-button {
+            color: var(--primary-text);
+            background: var(--primary);
+        }
+
+        .secondary-button {
+            color: var(--text);
+            border: 1px solid var(--border);
+            background: var(--card);
+        }
+
+        .secondary-button:hover {
+            background: var(--card-hover);
         }
 
         .admin-button {
@@ -132,49 +151,54 @@
         }
 
         .admin-button:hover {
-            box-shadow:
-                0 8px 25px rgba(255, 183, 77, 0.3);
+            box-shadow: 0 10px 28px rgba(255, 183, 77, 0.25);
+        }
+
+        .danger-button {
+            color: #fff;
+            border: 1px solid rgba(255, 143, 143, 0.4);
+            background: rgba(255, 143, 143, 0.12);
         }
 
         main {
-            display: grid;
-            place-items: center;
-            min-height: calc(100vh - 95px);
-            padding: 45px 24px;
-            text-align: center;
+            width: min(1120px, 100%);
+            margin: 0 auto;
+            padding: 70px 24px 120px;
         }
 
         .hero {
-            width: min(760px, 100%);
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
         }
 
         .badge {
             display: inline-block;
-            margin-bottom: 22px;
-            padding: 8px 14px;
+            margin-bottom: 23px;
+            padding: 8px 15px;
             border: 1px solid var(--border);
             border-radius: 999px;
-            color: #b9c8ff;
-            background: var(--surface);
-            backdrop-filter: blur(8px);
+            color: #bdcaff;
+            background: var(--card);
+            backdrop-filter: blur(10px);
         }
 
         h1 {
-            margin-bottom: 20px;
-            font-size: clamp(3.5rem, 11vw, 7rem);
-            line-height: 0.95;
-            letter-spacing: -4px;
+            margin-bottom: 22px;
+            font-size: clamp(4rem, 12vw, 7.5rem);
+            line-height: 0.9;
+            letter-spacing: -5px;
         }
 
-        .description {
-            max-width: 620px;
+        .hero-description {
+            max-width: 650px;
             margin: 0 auto;
             color: var(--muted);
             font-size: 1.15rem;
             line-height: 1.75;
         }
 
-        .buttons {
+        .hero-buttons {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
@@ -182,65 +206,225 @@
             margin-top: 34px;
         }
 
-        .primary {
-            color: #081023;
-            background: #ffffff;
-        }
-
-        .secondary {
-            color: #ffffff;
-            border: 1px solid var(--border);
-            background: var(--surface);
-        }
-
-        .secondary:hover {
-            background: var(--surface-hover);
-        }
-
-        #message {
-            min-height: 26px;
-            margin-top: 24px;
+        #siteMessage {
+            min-height: 27px;
+            margin-top: 22px;
             color: var(--success);
             font-weight: 700;
         }
 
-        .admin-panel {
+        .admin-section {
             display: none;
-            width: min(560px, 100%);
-            margin: 30px auto 0;
-            padding: 24px;
-            border: 1px solid rgba(255, 183, 77, 0.5);
-            border-radius: 16px;
-            background: rgba(255, 183, 77, 0.09);
-            box-shadow:
-                0 20px 60px rgba(0, 0, 0, 0.25);
+            margin-top: 70px;
+            animation: appear 0.3s ease;
         }
 
-        .admin-panel.visible {
+        .admin-section.visible {
             display: block;
-            animation: appear 0.25s ease;
         }
 
-        .admin-icon {
-            display: grid;
-            place-items: center;
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 16px;
-            border-radius: 50%;
-            color: var(--admin-dark);
-            background: var(--admin);
-            font-size: 1.8rem;
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 24px;
         }
 
-        .admin-panel h2 {
-            margin-bottom: 10px;
-            color: var(--admin);
+        .admin-header h2 {
+            margin-bottom: 7px;
+            font-size: clamp(2rem, 6vw, 3rem);
         }
 
-        .admin-panel p {
+        .admin-header p {
             color: var(--muted);
             line-height: 1.6;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            padding: 22px;
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            background: var(--card);
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-label {
+            margin-bottom: 8px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 850;
+        }
+
+        .gpa-value {
+            color: var(--success);
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 360px minmax(0, 1fr);
+            gap: 20px;
+            align-items: start;
+        }
+
+        .panel {
+            padding: 24px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: rgba(17, 23, 42, 0.82);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.18);
+            backdrop-filter: blur(12px);
+        }
+
+        .panel h3 {
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .field {
+            margin-bottom: 17px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 8px;
+            color: #dce4f7;
+            font-weight: 700;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.065);
+        }
+
+        .field input:focus,
+        .field select:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(140, 169, 255, 0.13);
+        }
+
+        .field select option {
+            color: #111;
+        }
+
+        .add-button {
+            width: 100%;
+            margin-top: 3px;
+        }
+
+        .grading-scale {
+            margin-top: 22px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .grading-scale h4 {
+            margin-bottom: 12px;
+        }
+
+        .scale-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 7px 14px;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .scale-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .table-header h3 {
+            margin: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 15px 16px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        th {
+            color: #dce4f7;
+            background: rgba(255, 255, 255, 0.055);
+            font-size: 0.88rem;
+            letter-spacing: 0.25px;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.035);
+        }
+
+        .grade-pill {
+            display: inline-flex;
+            justify-content: center;
+            min-width: 48px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            color: #07140d;
+            background: var(--success);
+            font-weight: 850;
+        }
+
+        .remove-button {
+            padding: 8px 11px;
+            border: 1px solid rgba(255, 143, 143, 0.38);
+            border-radius: 8px;
+            color: var(--danger);
+            background: rgba(255, 143, 143, 0.08);
+        }
+
+        .remove-button:hover {
+            background: rgba(255, 143, 143, 0.16);
+        }
+
+        .empty-state {
+            padding: 46px 20px;
+            color: var(--muted);
+            text-align: center;
         }
 
         .modal {
@@ -251,8 +435,8 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            background: rgba(0, 0, 0, 0.72);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.74);
+            backdrop-filter: blur(9px);
         }
 
         .modal.visible {
@@ -266,112 +450,93 @@
             border: 1px solid var(--border);
             border-radius: 18px;
             background: #11172a;
-            box-shadow:
-                0 30px 100px rgba(0, 0, 0, 0.5);
-            animation: appear 0.22s ease;
+            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.55);
+            animation: appear 0.23s ease;
         }
 
         .modal-card h2 {
             margin-bottom: 10px;
         }
 
-        .modal-description {
-            margin-bottom: 22px;
+        .modal-card > p {
+            margin-bottom: 21px;
             color: var(--muted);
             line-height: 1.55;
         }
 
         .close-button {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 38px;
-            height: 38px;
+            top: 14px;
+            right: 14px;
+            width: 39px;
+            height: 39px;
             border: 0;
             border-radius: 9px;
             color: var(--text);
-            background: var(--surface);
-            cursor: pointer;
+            background: var(--card);
         }
 
         .close-button:hover {
-            background: var(--surface-hover);
-        }
-
-        .password-label {
-            display: block;
-            margin-bottom: 8px;
-            color: #dbe4ff;
-            font-weight: 700;
-        }
-
-        .password-input {
-            width: 100%;
-            padding: 14px 15px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            outline: none;
-            color: var(--text);
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .password-input:focus {
-            border-color: var(--admin);
-            box-shadow:
-                0 0 0 3px rgba(255, 183, 77, 0.15);
+            background: var(--card-hover);
         }
 
         .password-wrapper {
             position: relative;
         }
 
-        .show-password {
+        .password-wrapper input {
+            padding-right: 72px;
+        }
+
+        .show-password-button {
             position: absolute;
             top: 50%;
-            right: 10px;
+            right: 8px;
             padding: 7px 9px;
             border: 0;
             border-radius: 7px;
             color: var(--muted);
             background: transparent;
-            cursor: pointer;
             transform: translateY(-50%);
         }
 
-        .show-password:hover {
+        .show-password-button:hover {
             color: var(--text);
-            background: var(--surface);
-        }
-
-        .login-button {
-            width: 100%;
-            margin-top: 16px;
-            color: var(--admin-dark);
-            background: var(--admin);
+            background: var(--card);
         }
 
         .login-error {
-            min-height: 24px;
-            margin-top: 14px;
+            min-height: 25px;
+            margin-top: 13px;
             color: var(--danger);
             font-weight: 700;
         }
 
         footer {
-            padding: 25px;
-            color: #7f89a3;
+            padding: 28px;
+            color: #78829a;
             text-align: center;
         }
 
         @keyframes appear {
             from {
                 opacity: 0;
-                transform: translateY(8px) scale(0.98);
+                transform: translateY(8px);
             }
 
             to {
                 opacity: 1;
-                transform: translateY(0) scale(1);
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 850px) {
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -384,12 +549,29 @@
                 display: none;
             }
 
-            h1 {
-                letter-spacing: -2px;
+            main {
+                padding: 55px 18px 90px;
             }
 
-            .admin-button {
-                padding: 10px 13px;
+            h1 {
+                letter-spacing: -3px;
+            }
+
+            .admin-header {
+                flex-direction: column;
+            }
+
+            .admin-header .button {
+                width: 100%;
+            }
+
+            .table-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .table-header .button {
+                width: 100%;
             }
         }
     </style>
@@ -400,16 +582,11 @@
         <div class="logo">Donut</div>
 
         <div class="nav-links">
-            <a class="nav-link" href="#home">
-                Home
-            </a>
-
-            <a class="nav-link" href="#about">
-                About
-            </a>
+            <a class="nav-link" href="#home">Home</a>
+            <a class="nav-link" href="#about">About</a>
 
             <button
-                class="admin-button"
+                class="button admin-button"
                 id="adminButton"
                 type="button"
             >
@@ -421,19 +598,19 @@
     <main id="home">
         <section class="hero">
             <div class="badge">
-                Website under development
+                Grade Management Website
             </div>
 
             <h1>Donut.</h1>
 
-            <p class="description" id="about">
-                Welcome to Donut. More content and features
-                will be added soon.
+            <p class="hero-description" id="about">
+                A simple grade-management website using the
+                4.00 GPA grading scale commonly used in Thailand.
             </p>
 
-            <div class="buttons">
+            <div class="hero-buttons">
                 <button
-                    class="normal-button primary"
+                    class="button primary-button"
                     id="testButton"
                     type="button"
                 >
@@ -441,7 +618,7 @@
                 </button>
 
                 <a
-                    class="button secondary"
+                    class="button secondary-button"
                     href="https://github.com/TakkyTiggerTTT/Donut"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -450,41 +627,217 @@
                 </a>
             </div>
 
-            <div id="message" aria-live="polite"></div>
+            <div id="siteMessage" aria-live="polite"></div>
+        </section>
 
-            <section
-                class="admin-panel"
-                id="adminPanel"
-            >
-                <div class="admin-icon">
-                    ✓
+        <section
+            class="admin-section"
+            id="adminSection"
+        >
+            <div class="admin-header">
+                <div>
+                    <h2>Grade Administration</h2>
+
+                    <p>
+                        You are signed in as an administrator.
+                        Add subjects and calculate the cumulative GPA.
+                    </p>
                 </div>
 
-                <h2>You are an admin</h2>
+                <button
+                    class="button secondary-button"
+                    id="logoutButton"
+                    type="button"
+                >
+                    Log Out
+                </button>
+            </div>
 
-                <p>
-                    You successfully entered the admin password.
-                </p>
+            <div class="summary-grid">
+                <article class="summary-card">
+                    <div class="summary-label">
+                        Current GPA
+                    </div>
 
-                <div class="buttons">
-                    <a
-                        class="button admin-button"
-                        href="https://github.com/TakkyTiggerTTT/Donut/edit/main/index.html"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    <div
+                        class="summary-value gpa-value"
+                        id="gpaValue"
                     >
-                        Open Website Editor
-                    </a>
+                        0.00
+                    </div>
+                </article>
 
-                    <button
-                        class="normal-button secondary"
-                        id="logoutButton"
-                        type="button"
+                <article class="summary-card">
+                    <div class="summary-label">
+                        Total Subjects
+                    </div>
+
+                    <div
+                        class="summary-value"
+                        id="subjectCount"
                     >
-                        Log Out
-                    </button>
-                </div>
-            </section>
+                        0
+                    </div>
+                </article>
+
+                <article class="summary-card">
+                    <div class="summary-label">
+                        Total Credits
+                    </div>
+
+                    <div
+                        class="summary-value"
+                        id="creditCount"
+                    >
+                        0
+                    </div>
+                </article>
+            </div>
+
+            <div class="admin-grid">
+                <section class="panel">
+                    <h3>Add a Subject</h3>
+
+                    <form id="gradeForm">
+                        <div class="field">
+                            <label for="subjectInput">
+                                Subject name
+                            </label>
+
+                            <input
+                                id="subjectInput"
+                                type="text"
+                                placeholder="Example: Mathematics"
+                                maxlength="100"
+                                required
+                            >
+                        </div>
+
+                        <div class="field">
+                            <label for="creditInput">
+                                Credits
+                            </label>
+
+                            <input
+                                id="creditInput"
+                                type="number"
+                                min="0.5"
+                                max="20"
+                                step="0.5"
+                                value="3"
+                                required
+                            >
+                        </div>
+
+                        <div class="field">
+                            <label for="gradeInput">
+                                Grade
+                            </label>
+
+                            <select id="gradeInput" required>
+                                <option value="A">A — 4.00</option>
+                                <option value="B+">B+ — 3.50</option>
+                                <option value="B">B — 3.00</option>
+                                <option value="C+">C+ — 2.50</option>
+                                <option value="C">C — 2.00</option>
+                                <option value="D+">D+ — 1.50</option>
+                                <option value="D">D — 1.00</option>
+                                <option value="F">F — 0.00</option>
+                            </select>
+                        </div>
+
+                        <button
+                            class="button admin-button add-button"
+                            type="submit"
+                        >
+                            + Add Subject
+                        </button>
+                    </form>
+
+                    <div class="grading-scale">
+                        <h4>GPA scale</h4>
+
+                        <div class="scale-list">
+                            <div class="scale-item">
+                                <span>A</span>
+                                <strong>4.00</strong>
+                            </div>
+
+                            <div class="scale-item">
+                                <span>B+</span>
+                                <strong>3.50</strong>
+                            </div>
+
+                            <div class="scale-item">
+                                <span>B</span>
+                                <strong>3.00</strong>
+                            </div>
+
+                            <div class="scale-item">
+                                <span>C+</span>
+                                <strong>2.50</strong>
+                            </div>
+
+                            <div class="scale-item">
+                                <span>C</span>
+                                <strong>2.00</strong>
+                            </div>
+
+                            <div class="scale-item">
+                                <span>D+</span>
+                                <strong>1.50</strong>
+                            </div>
+
+                            <div class="scale-item">
+                                <span>D</span>
+                                <strong>1.00</strong>
+                            </div>
+
+                            <div class="scale-item">
+                                <span>F</span>
+                                <strong>0.00</strong>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="panel">
+                    <div class="table-header">
+                        <h3>Subject Grades</h3>
+
+                        <button
+                            class="button danger-button"
+                            id="clearGradesButton"
+                            type="button"
+                        >
+                            Clear All
+                        </button>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Credits</th>
+                                    <th>Grade</th>
+                                    <th>Points</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="gradeTableBody"></tbody>
+                        </table>
+
+                        <div
+                            class="empty-state"
+                            id="emptyState"
+                        >
+                            No subjects have been added yet.
+                        </div>
+                    </div>
+                </section>
+            </div>
         </section>
     </main>
 
@@ -509,42 +862,39 @@
                 ✕
             </button>
 
-            <h2 id="loginTitle">
-                Admin Login
-            </h2>
+            <h2 id="loginTitle">Admin Login</h2>
 
-            <p class="modal-description">
-                Enter the admin password to continue.
+            <p>
+                Enter the administrator password to access
+                the grade-management controls.
             </p>
 
             <form id="passwordForm">
-                <label
-                    class="password-label"
-                    for="passwordInput"
-                >
-                    Password
-                </label>
+                <div class="field">
+                    <label for="passwordInput">
+                        Password
+                    </label>
 
-                <div class="password-wrapper">
-                    <input
-                        class="password-input"
-                        id="passwordInput"
-                        type="password"
-                        autocomplete="current-password"
-                        required
-                    >
+                    <div class="password-wrapper">
+                        <input
+                            id="passwordInput"
+                            type="password"
+                            autocomplete="current-password"
+                            required
+                        >
 
-                    <button
-                        class="show-password"
-                        id="showPasswordButton"
-                        type="button"
-                    >
-                        Show
-                    </button>
+                        <button
+                            class="show-password-button"
+                            id="showPasswordButton"
+                            type="button"
+                        >
+                            Show
+                        </button>
+                    </div>
                 </div>
 
                 <button
-                    class="normal-button login-button"
+                    class="button admin-button add-button"
                     type="submit"
                 >
                     Sign In
@@ -562,11 +912,28 @@
     <script>
         const ADMIN_PASSWORD = "donut";
 
+        const GRADE_POINTS = {
+            "A": 4.0,
+            "B+": 3.5,
+            "B": 3.0,
+            "C+": 2.5,
+            "C": 2.0,
+            "D+": 1.5,
+            "D": 1.0,
+            "F": 0.0
+        };
+
+        const STORAGE_KEY = "donutGradeSubjects";
+        const ADMIN_SESSION_KEY = "donutAdminLoggedIn";
+
         const adminButton =
             document.getElementById("adminButton");
 
         const passwordModal =
             document.getElementById("passwordModal");
+
+        const closeModalButton =
+            document.getElementById("closeModalButton");
 
         const passwordForm =
             document.getElementById("passwordForm");
@@ -574,53 +941,71 @@
         const passwordInput =
             document.getElementById("passwordInput");
 
-        const loginError =
-            document.getElementById("loginError");
-
-        const closeModalButton =
-            document.getElementById("closeModalButton");
-
         const showPasswordButton =
             document.getElementById("showPasswordButton");
 
-        const adminPanel =
-            document.getElementById("adminPanel");
+        const loginError =
+            document.getElementById("loginError");
+
+        const adminSection =
+            document.getElementById("adminSection");
 
         const logoutButton =
             document.getElementById("logoutButton");
 
+        const gradeForm =
+            document.getElementById("gradeForm");
+
+        const subjectInput =
+            document.getElementById("subjectInput");
+
+        const creditInput =
+            document.getElementById("creditInput");
+
+        const gradeInput =
+            document.getElementById("gradeInput");
+
+        const gradeTableBody =
+            document.getElementById("gradeTableBody");
+
+        const emptyState =
+            document.getElementById("emptyState");
+
+        const clearGradesButton =
+            document.getElementById("clearGradesButton");
+
+        const gpaValue =
+            document.getElementById("gpaValue");
+
+        const subjectCount =
+            document.getElementById("subjectCount");
+
+        const creditCount =
+            document.getElementById("creditCount");
+
         const testButton =
             document.getElementById("testButton");
 
-        const message =
-            document.getElementById("message");
+        const siteMessage =
+            document.getElementById("siteMessage");
 
         const year =
             document.getElementById("year");
+
+        let subjects = loadSubjects();
 
         year.textContent =
             `© ${new Date().getFullYear()}`;
 
         function isAdminLoggedIn() {
             return sessionStorage.getItem(
-                "donutAdminLoggedIn"
+                ADMIN_SESSION_KEY
             ) === "true";
         }
 
-        function showAdminPanel() {
-            adminPanel.classList.add("visible");
-            adminButton.textContent = "✓ Admin";
-            message.textContent = "";
-        }
-
-        function hideAdminPanel() {
-            adminPanel.classList.remove("visible");
-            adminButton.textContent = "🔐 Admin";
-        }
-
         function openPasswordModal() {
-            loginError.textContent = "";
             passwordInput.value = "";
+            loginError.textContent = "";
 
             passwordModal.classList.add("visible");
             document.body.classList.add("modal-open");
@@ -638,13 +1023,252 @@
             loginError.textContent = "";
         }
 
+        function showAdminSection() {
+            adminSection.classList.add("visible");
+            adminButton.textContent = "✓ Admin";
+            renderSubjects();
+        }
+
+        function hideAdminSection() {
+            adminSection.classList.remove("visible");
+            adminButton.textContent = "🔐 Admin";
+        }
+
+        function loadSubjects() {
+            try {
+                const saved =
+                    localStorage.getItem(STORAGE_KEY);
+
+                if (!saved) {
+                    return [];
+                }
+
+                const parsed = JSON.parse(saved);
+
+                return Array.isArray(parsed)
+                    ? parsed
+                    : [];
+            } catch (error) {
+                console.error(
+                    "Could not load saved grades:",
+                    error
+                );
+
+                return [];
+            }
+        }
+
+        function saveSubjects() {
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(subjects)
+            );
+        }
+
+        function calculateGpa() {
+            const totalCredits = subjects.reduce(
+                (total, subject) =>
+                    total + subject.credits,
+                0
+            );
+
+            if (totalCredits === 0) {
+                return 0;
+            }
+
+            const totalWeightedPoints =
+                subjects.reduce(
+                    (total, subject) => {
+                        return total +
+                            (
+                                GRADE_POINTS[
+                                    subject.grade
+                                ] *
+                                subject.credits
+                            );
+                    },
+                    0
+                );
+
+            return totalWeightedPoints /
+                totalCredits;
+        }
+
+        function renderSubjects() {
+            gradeTableBody.innerHTML = "";
+
+            emptyState.style.display =
+                subjects.length === 0
+                    ? "block"
+                    : "none";
+
+            subjects.forEach((subject) => {
+                const row =
+                    document.createElement("tr");
+
+                const weightedPoints =
+                    GRADE_POINTS[subject.grade] *
+                    subject.credits;
+
+                row.innerHTML = `
+                    <td>${escapeHtml(subject.name)}</td>
+                    <td>${formatNumber(subject.credits)}</td>
+                    <td>
+                        <span class="grade-pill">
+                            ${escapeHtml(subject.grade)}
+                        </span>
+                    </td>
+                    <td>${weightedPoints.toFixed(2)}</td>
+                    <td>
+                        <button
+                            class="remove-button"
+                            type="button"
+                            data-id="${subject.id}"
+                        >
+                            Remove
+                        </button>
+                    </td>
+                `;
+
+                gradeTableBody.appendChild(row);
+            });
+
+            const totalCredits = subjects.reduce(
+                (total, subject) =>
+                    total + subject.credits,
+                0
+            );
+
+            gpaValue.textContent =
+                calculateGpa().toFixed(2);
+
+            subjectCount.textContent =
+                String(subjects.length);
+
+            creditCount.textContent =
+                formatNumber(totalCredits);
+
+            document
+                .querySelectorAll(".remove-button")
+                .forEach((button) => {
+                    button.addEventListener(
+                        "click",
+                        () => {
+                            removeSubject(
+                                button.dataset.id
+                            );
+                        }
+                    );
+                });
+        }
+
+        function addSubject(event) {
+            event.preventDefault();
+
+            const name =
+                subjectInput.value.trim();
+
+            const credits =
+                Number(creditInput.value);
+
+            const grade =
+                gradeInput.value;
+
+            if (!name) {
+                alert("Please enter a subject name.");
+                return;
+            }
+
+            if (
+                !Number.isFinite(credits) ||
+                credits <= 0
+            ) {
+                alert(
+                    "Please enter a valid credit amount."
+                );
+
+                return;
+            }
+
+            if (
+                !Object.prototype.hasOwnProperty.call(
+                    GRADE_POINTS,
+                    grade
+                )
+            ) {
+                alert("Please select a valid grade.");
+                return;
+            }
+
+            subjects.push({
+                id:
+                    crypto.randomUUID
+                        ? crypto.randomUUID()
+                        : `${Date.now()}-${Math.random()}`,
+                name,
+                credits,
+                grade
+            });
+
+            saveSubjects();
+            renderSubjects();
+
+            subjectInput.value = "";
+            creditInput.value = "3";
+            gradeInput.value = "A";
+
+            subjectInput.focus();
+        }
+
+        function removeSubject(id) {
+            subjects = subjects.filter(
+                (subject) => subject.id !== id
+            );
+
+            saveSubjects();
+            renderSubjects();
+        }
+
+        function clearAllSubjects() {
+            if (subjects.length === 0) {
+                return;
+            }
+
+            const confirmed = confirm(
+                "Remove every saved subject and grade?"
+            );
+
+            if (!confirmed) {
+                return;
+            }
+
+            subjects = [];
+            saveSubjects();
+            renderSubjects();
+        }
+
+        function formatNumber(number) {
+            return Number.isInteger(number)
+                ? String(number)
+                : number.toFixed(1);
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+        }
+
         adminButton.addEventListener("click", () => {
             if (isAdminLoggedIn()) {
-                showAdminPanel();
+                showAdminSection();
 
-                adminPanel.scrollIntoView({
+                adminSection.scrollIntoView({
                     behavior: "smooth",
-                    block: "center"
+                    block: "start"
                 });
 
                 return;
@@ -667,14 +1291,19 @@
             }
         );
 
-        document.addEventListener("keydown", (event) => {
-            if (
-                event.key === "Escape" &&
-                passwordModal.classList.contains("visible")
-            ) {
-                closePasswordModal();
+        document.addEventListener(
+            "keydown",
+            (event) => {
+                if (
+                    event.key === "Escape" &&
+                    passwordModal.classList.contains(
+                        "visible"
+                    )
+                ) {
+                    closePasswordModal();
+                }
             }
-        });
+        );
 
         passwordForm.addEventListener(
             "submit",
@@ -686,16 +1315,16 @@
                     ADMIN_PASSWORD
                 ) {
                     sessionStorage.setItem(
-                        "donutAdminLoggedIn",
+                        ADMIN_SESSION_KEY,
                         "true"
                     );
 
                     closePasswordModal();
-                    showAdminPanel();
+                    showAdminSection();
 
-                    adminPanel.scrollIntoView({
+                    adminSection.scrollIntoView({
                         behavior: "smooth",
-                        block: "center"
+                        block: "start"
                     });
                 } else {
                     loginError.textContent =
@@ -709,39 +1338,60 @@
         showPasswordButton.addEventListener(
             "click",
             () => {
-                const passwordIsHidden =
+                const hidden =
                     passwordInput.type === "password";
 
                 passwordInput.type =
-                    passwordIsHidden
+                    hidden
                         ? "text"
                         : "password";
 
                 showPasswordButton.textContent =
-                    passwordIsHidden
+                    hidden
                         ? "Hide"
                         : "Show";
             }
         );
 
-        logoutButton.addEventListener("click", () => {
-            sessionStorage.removeItem(
-                "donutAdminLoggedIn"
-            );
+        logoutButton.addEventListener(
+            "click",
+            () => {
+                sessionStorage.removeItem(
+                    ADMIN_SESSION_KEY
+                );
 
-            hideAdminPanel();
+                hideAdminSection();
 
-            message.textContent =
-                "You have logged out.";
-        });
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
 
-        testButton.addEventListener("click", () => {
-            message.textContent =
-                "Donut is working correctly!";
-        });
+                siteMessage.textContent =
+                    "You have logged out.";
+            }
+        );
+
+        gradeForm.addEventListener(
+            "submit",
+            addSubject
+        );
+
+        clearGradesButton.addEventListener(
+            "click",
+            clearAllSubjects
+        );
+
+        testButton.addEventListener(
+            "click",
+            () => {
+                siteMessage.textContent =
+                    "Donut is working correctly!";
+            }
+        );
 
         if (isAdminLoggedIn()) {
-            showAdminPanel();
+            showAdminSection();
         }
     </script>
 </body>

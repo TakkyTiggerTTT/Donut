@@ -54,6 +54,12 @@ function enforceAccess() {
     // Wait until Firebase Authentication and the user's Firestore profile are resolved.
     // This prevents an owner or co-owner being redirected before their role is known.
     if (!authResolved) return;
+
+    // The Owner Controls page must stay reachable while WIP mode is on,
+    // even when nobody is signed in yet. owner.html performs its own
+    // owner/co-owner permission check after login.
+    if (isOwnerPage) return;
+
     if (isManagementRole(currentProfile?.role)) return;
     redirectToMaintenance();
     return;

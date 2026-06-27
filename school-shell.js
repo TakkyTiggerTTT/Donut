@@ -25,6 +25,7 @@ let currentSettings = {
   wipMessage: "Superstar School is being updated. Please check again later."
 };
 let authResolved = false;
+let profileResolved = false;
 let unsubscribeProfile = null;
 
 function isManagementRole(role) {
@@ -97,6 +98,10 @@ function enforceAccess() {
     // owner.html must stay open so owners/co-owners can sign in and disable WIP.
     if (isOwnerPage) return;
 
+    // If a signed-in user is still loading, do not redirect yet.
+    // This prevents owners/co-owners from being bounced to maintenance/dashboard before their role is read.
+    if (auth.currentUser && !profileResolved) return;
+
     // Owners and co-owners may still access the site while WIP mode is on.
     if (isManagementRole(currentProfile?.role)) return;
 
@@ -115,6 +120,7 @@ function enforceAccess() {
   if (
     isOwnerPage &&
     authResolved &&
+    profileResolved &&
     auth.currentUser &&
     !isManagementRole(currentProfile?.role)
   ) {
@@ -249,6 +255,7 @@ function listenToProfile(user) {
   }
 
   if (!user) {
+    profileResolved = true;
     currentProfile = null;
     updateShell(null);
     enforceAccess();
@@ -256,9 +263,13 @@ function listenToProfile(user) {
     return;
   }
 
+  profileResolved = false;
+
   unsubscribeProfile = onSnapshot(
     doc(db, "users", user.uid),
     async (snapshot) => {
+      profileResolved = true;
+
       if (!snapshot.exists()) {
         currentProfile = null;
         updateShell(null);
@@ -279,6 +290,7 @@ function listenToProfile(user) {
     },
     async (error) => {
       console.warn("Could not listen for shell profile:", error);
+      profileResolved = true;
       currentProfile = null;
       updateShell(null);
       dispatchProfile();
@@ -302,6 +314,7 @@ onSnapshot(
 
 onAuthStateChanged(auth, (user) => {
   authResolved = true;
+  profileResolved = false;
   listenToProfile(user);
 });
 

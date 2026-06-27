@@ -190,6 +190,10 @@
     .answer-box { margin-top: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: rgba(0,0,0,.18); }
     .correct { color: var(--success); }
     .wrong { color: var(--danger); }
+    .grade-control-grid { display: grid; grid-template-columns: auto 140px; gap: 12px; align-items: center; margin-top: 12px; }
+    .grade-control-grid input[type='checkbox'] { width: auto; transform: scale(1.15); }
+    .grade-feedback { margin-top: 12px; }
+    .score-preview { margin-top: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,183,77,.09); color: var(--accent); font-weight: 850; }
     .message { min-height: 24px; margin-top: 12px; font-weight: 800; }
     .message.ok { color: var(--success); }
     .message.err { color: var(--danger); }
@@ -245,7 +249,7 @@
         <div class="grid">
           <section class="panel">
             <h2>Create quiz</h2>
-            <p class="note">Students cannot read the answer key. They only see the questions until you grade the attempt.</p>
+            <p class="note">Students only see the questions. Admins manually grade submitted answers later.</p>
             <form id="quizForm">
               <div class="field">
                 <label for="quizTitle">Quiz title</label>
@@ -258,6 +262,10 @@
               <div class="field">
                 <label for="quizCategory">Subcategory</label>
                 <select id="quizCategory" required></select>
+              </div>
+              <div class="answer-box">
+                <strong>Subcategory total:</strong>
+                <span id="categoryPointInfo">Select a subcategory to see its total points.</span>
               </div>
               <div class="field">
                 <label for="quizInstructions">Instructions</label>
@@ -279,7 +287,7 @@
             <div class="item-head">
               <div>
                 <h2>Questions</h2>
-                <p class="note">Each question has its own point value and hidden correct answer.</p>
+                <p class="note">Each question has its own point value. There is no stored correct answer; admins manually mark answers correct or wrong after students submit.</p>
               </div>
               <button class="button secondary" id="addQuestionButton" type="button">+ Add question</button>
             </div>
@@ -294,7 +302,7 @@
           <div class="item-head">
             <div>
               <h2>Published quizzes</h2>
-              <p class="note">Delete quizzes from here. This also removes answer keys and attempts for that quiz.</p>
+              <p class="note">Delete quizzes from here. This also removes all attempts for that quiz.</p>
             </div>
           </div>
           <div class="list" id="adminQuizList"></div>
@@ -304,7 +312,7 @@
       <section class="tabpage" id="attemptsTab">
         <section class="panel">
           <h2>Student attempts</h2>
-          <p class="note">Use Grade Attempt to check answers against the hidden answer key and publish the result.</p>
+          <p class="note">Use Grade Attempt to review the student answers, mark each question correct or wrong, and enter points.</p>
           <div class="table-wrap">
             <table>
               <thead>
@@ -321,6 +329,22 @@
             </table>
           </div>
           <div class="empty hidden" id="attemptEmpty">No attempts have been submitted yet.</div>
+        </section>
+
+        <section class="panel hidden" id="manualGradePanel">
+          <div class="item-head">
+            <div>
+              <h2 id="manualGradeTitle">Grade attempt</h2>
+              <p class="note" id="manualGradeMeta"></p>
+            </div>
+            <button class="button secondary" id="cancelManualGradeButton" type="button">Cancel grading</button>
+          </div>
+          <form id="manualGradeForm">
+            <div id="manualGradeQuestions"></div>
+            <div class="score-preview">Total score: <span id="manualGradeTotal">0</span></div>
+            <button class="button accent full" type="submit">Save graded result</button>
+            <div class="message" id="manualGradeMessage" aria-live="polite"></div>
+          </form>
         </section>
       </section>
     </section>
@@ -356,7 +380,7 @@
 
       <section class="panel">
         <h2>My completed quizzes</h2>
-        <p class="note">Submitted quizzes stay here. Correct answers appear only after the quiz is graded.</p>
+        <p class="note">Submitted quizzes stay here. After grading, you can see which answers were marked correct or wrong and how many points you earned. No answer key is stored or shown.</p>
         <div class="list" id="studentAttemptList"></div>
       </section>
     </section>
@@ -399,6 +423,7 @@
       quizTitle: document.getElementById("quizTitle"),
       quizSubject: document.getElementById("quizSubject"),
       quizCategory: document.getElementById("quizCategory"),
+      categoryPointInfo: document.getElementById("categoryPointInfo"),
       quizInstructions: document.getElementById("quizInstructions"),
       classTargets: document.getElementById("classTargets"),
       studentTargets: document.getElementById("studentTargets"),
@@ -409,6 +434,14 @@
       adminQuizList: document.getElementById("adminQuizList"),
       attemptTable: document.getElementById("attemptTable"),
       attemptEmpty: document.getElementById("attemptEmpty"),
+      manualGradePanel: document.getElementById("manualGradePanel"),
+      manualGradeTitle: document.getElementById("manualGradeTitle"),
+      manualGradeMeta: document.getElementById("manualGradeMeta"),
+      manualGradeQuestions: document.getElementById("manualGradeQuestions"),
+      manualGradeForm: document.getElementById("manualGradeForm"),
+      manualGradeTotal: document.getElementById("manualGradeTotal"),
+      manualGradeMessage: document.getElementById("manualGradeMessage"),
+      cancelManualGradeButton: document.getElementById("cancelManualGradeButton"),
       studentAvailableCount: document.getElementById("studentAvailableCount"),
       studentSubmittedCount: document.getElementById("studentSubmittedCount"),
       studentGradedCount: document.getElementById("studentGradedCount"),
@@ -428,10 +461,11 @@
 
     let profile = null;
     let data = {
-      users: [], classes: [], subjects: [], categories: [], quizzes: [], attempts: [], answerKeys: []
+      users: [], classes: [], subjects: [], categories: [], quizzes: [], attempts: []
     };
     let questions = [];
     let activeQuiz = null;
+    let activeGradeAttempt = null;
 
     function isAdminRole(role) {
       return role === "admin" || role === "co-owner" || role === "owner";
@@ -467,7 +501,6 @@
     function getAttemptForQuiz(quizId, studentId) {
       return data.attempts.find((attempt) => attempt.quizId === quizId && attempt.studentId === studentId);
     }
-    function getAnswerKey(quizId) { return data.answerKeys.find((key) => key.id === quizId); }
 
     function formatDate(value) {
       if (!value) return "—";
@@ -521,11 +554,29 @@
       fillSelect(els.quizSubject, data.subjects, "Select subject", (item) => item.name || "Unnamed subject");
       const categories = data.categories.filter((item) => item.subjectId === els.quizSubject.value);
       fillSelect(els.quizCategory, categories, "Select subcategory", (item) => item.name || "Unnamed item");
+      updateCategoryPointInfo();
+    }
+
+    function currentQuestionTotalFromDom() {
+      return [...document.querySelectorAll("[data-question-points]")]
+        .reduce((sum, input) => sum + Number(input.value || 0), 0);
+    }
+
+    function updateCategoryPointInfo() {
+      if (!els.categoryPointInfo) return;
+      const category = getCategory(els.quizCategory.value);
+      const quizTotal = currentQuestionTotalFromDom();
+      if (!category) {
+        els.categoryPointInfo.textContent = `Select a subcategory to see its total points. Current quiz total: ${quizTotal.toFixed(1).replace(/\.0$/, "")} points.`;
+        return;
+      }
+      const maxScore = Number(category.maxScore || category.points || 0);
+      els.categoryPointInfo.textContent = `This subcategory total is ${Number.isFinite(maxScore) && maxScore > 0 ? maxScore.toFixed(1).replace(/\.0$/, "") : "not set"} points. Current quiz question total: ${quizTotal.toFixed(1).replace(/\.0$/, "")} points.`;
     }
 
     function renderQuestionBuilder() {
       if (questions.length === 0) {
-        questions.push({ id: uid(), text: "", points: 1, correctAnswer: "" });
+        questions.push({ id: uid(), text: "", points: 1 });
       }
 
       els.questionBuilder.innerHTML = questions.map((question, index) => `
@@ -542,20 +593,17 @@
             <label>Points</label>
             <input data-question-points="${escapeHtml(question.id)}" type="number" min="0.5" max="100" step="0.5" value="${escapeHtml(question.points)}" required>
           </div>
-          <div class="field">
-            <label>Correct answer hidden from students</label>
-            <input data-question-answer="${escapeHtml(question.id)}" type="text" maxlength="500" value="${escapeHtml(question.correctAnswer)}" required>
-          </div>
+
         </div>
       `).join("");
+      updateCategoryPointInfo();
     }
 
     function collectQuestionsFromDom() {
       questions = questions.map((question) => {
         const text = document.querySelector(`[data-question-text="${CSS.escape(question.id)}"]`)?.value.trim() || "";
         const points = Number(document.querySelector(`[data-question-points="${CSS.escape(question.id)}"]`)?.value || 0);
-        const correctAnswer = document.querySelector(`[data-question-answer="${CSS.escape(question.id)}"]`)?.value.trim() || "";
-        return { ...question, text, points, correctAnswer };
+        return { ...question, text, points };
       });
     }
 
@@ -564,14 +612,13 @@
     }
 
     async function loadAdminData() {
-      const [usersSnap, classesSnap, subjectsSnap, categoriesSnap, quizzesSnap, attemptsSnap, answerKeysSnap] = await Promise.all([
+      const [usersSnap, classesSnap, subjectsSnap, categoriesSnap, quizzesSnap, attemptsSnap] = await Promise.all([
         getDocs(collection(db, "users")),
         getDocs(collection(db, "classes")),
         getDocs(collection(db, "subjects")),
         getDocs(collection(db, "categories")),
         getDocs(collection(db, "quizzes")),
-        getDocs(collection(db, "quizAttempts")),
-        getDocs(collection(db, "quizAnswerKeys"))
+        getDocs(collection(db, "quizAttempts"))
       ]);
       data.users = snapshotToArray(usersSnap);
       data.classes = snapshotToArray(classesSnap).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
@@ -579,7 +626,6 @@
       data.categories = snapshotToArray(categoriesSnap).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
       data.quizzes = snapshotToArray(quizzesSnap).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
       data.attempts = snapshotToArray(attemptsSnap).sort((a, b) => (b.submittedAt?.seconds || 0) - (a.submittedAt?.seconds || 0));
-      data.answerKeys = snapshotToArray(answerKeysSnap);
       renderAdmin();
     }
 
@@ -637,7 +683,7 @@
             <div class="item-head">
               <div>
                 <h3>${escapeHtml(quiz.title)}</h3>
-                <div class="meta">${escapeHtml(subject)} → ${escapeHtml(category)} · ${quiz.questionCount || (quiz.questions || []).length} questions · ${quiz.totalPoints || pointsTotal(quiz)} points · ${attempts.length} attempts</div>
+                <div class="meta">${escapeHtml(subject)} → ${escapeHtml(category)} · ${quiz.questionCount || (quiz.questions || []).length} questions · Quiz total ${quiz.totalPoints || pointsTotal(quiz)} points · Subcategory total ${escapeHtml(getCategory(quiz.categoryId)?.maxScore || "not set")} · ${attempts.length} attempts</div>
                 <div class="meta">Recipients: ${escapeHtml((quiz.recipientNames || []).join(", ") || "Selected students")}</div>
               </div>
               <button class="button danger" data-delete-quiz="${escapeHtml(quiz.id)}" type="button">Delete</button>
@@ -696,7 +742,7 @@
             <div>
               <h3>${escapeHtml(quiz.title)}</h3>
               <div class="meta">${escapeHtml(quiz.subjectName || getSubject(quiz.subjectId)?.name || "Subject")} → ${escapeHtml(quiz.categoryName || getCategory(quiz.categoryId)?.name || "Category")}</div>
-              <div class="meta">${quiz.questionCount || (quiz.questions || []).length} questions · ${quiz.totalPoints || pointsTotal(quiz)} points</div>
+              <div class="meta">${quiz.questionCount || (quiz.questions || []).length} questions · Quiz total ${quiz.totalPoints || pointsTotal(quiz)} points · Subcategory total ${escapeHtml(getCategory(quiz.categoryId)?.maxScore || "not set")}</div>
             </div>
             <button class="button accent" data-start-quiz="${escapeHtml(quiz.id)}" type="button">Start</button>
           </div>
@@ -717,7 +763,7 @@
             <div class="answer-box">
               <strong>Q${index + 1}:</strong> ${escapeHtml(answer.questionText || "Question")}<br>
               <span class="meta">Your answer:</span> ${escapeHtml(answer.answer || "No answer")}
-              ${attempt.status === "graded" && graded ? `<br><span class="${graded.awardedPoints >= Number(answer.points || 0) ? "correct" : "wrong"}">Points: ${Number(graded.awardedPoints || 0).toFixed(1)} / ${Number(answer.points || 0).toFixed(1)}</span><br><span class="meta">Correct answer:</span> ${escapeHtml(graded.correctAnswer || "")}` : ""}
+              ${attempt.status === "graded" && graded ? `<br><span class="${graded.markedCorrect ? "correct" : "wrong"}">${graded.markedCorrect ? "Marked correct" : "Marked wrong"}</span><br><span class="meta">Points:</span> ${Number(graded.awardedPoints || 0).toFixed(1)} / ${Number(answer.points || 0).toFixed(1)}${graded.feedback ? `<br><span class="meta">Admin feedback:</span> ${escapeHtml(graded.feedback)}` : ""}` : ""}
             </div>
           `;
         }).join("");
@@ -762,9 +808,9 @@
         els.createMessage.textContent = "Select at least one class or student.";
         return;
       }
-      if (questions.length === 0 || questions.some((q) => !q.text || !q.correctAnswer || !Number.isFinite(Number(q.points)) || Number(q.points) <= 0)) {
+      if (questions.length === 0 || questions.some((q) => !q.text || !Number.isFinite(Number(q.points)) || Number(q.points) <= 0)) {
         els.createMessage.className = "message err";
-        els.createMessage.textContent = "Every question needs text, points, and a correct answer.";
+        els.createMessage.textContent = "Every question needs question text and points.";
         return;
       }
 
@@ -774,11 +820,6 @@
           id: question.id,
           number: index + 1,
           text: question.text,
-          points: Number(question.points)
-        }));
-        const answerKey = questions.map((question) => ({
-          questionId: question.id,
-          correctAnswer: question.correctAnswer,
           points: Number(question.points)
         }));
         const totalPoints = safeQuestions.reduce((sum, question) => sum + question.points, 0);
@@ -800,16 +841,10 @@
           createdByName: profile.name || profile.username || "Admin",
           createdAt: serverTimestamp()
         });
-        await setDoc(doc(db, "quizAnswerKeys", quizRef.id), {
-          quizId: quizRef.id,
-          answers: answerKey,
-          createdBy: auth.currentUser.uid,
-          createdAt: serverTimestamp()
-        });
         els.createMessage.className = "message ok";
         els.createMessage.textContent = "Quiz published.";
         els.quizForm.reset();
-        questions = [{ id: uid(), text: "", points: 1, correctAnswer: "" }];
+        questions = [{ id: uid(), text: "", points: 1 }];
         await loadAdminData();
       } catch (error) {
         console.error(error);
@@ -892,31 +927,84 @@
       }
     }
 
-    async function gradeAttempt(attemptId) {
+    function startManualGrade(attemptId) {
       const attempt = data.attempts.find((item) => item.id === attemptId);
       if (!attempt) return;
-      const key = getAnswerKey(attempt.quizId);
-      if (!key) {
-        alert("Answer key missing. Cannot grade this quiz.");
-        return;
-      }
+      activeGradeAttempt = attempt;
+      const quiz = data.quizzes.find((item) => item.id === attempt.quizId);
+      const student = getUser(attempt.studentId);
+      const category = getCategory(attempt.categoryId);
+      els.manualGradeTitle.textContent = `Grade: ${attempt.quizTitle || quiz?.title || "Quiz"}`;
+      els.manualGradeMeta.textContent = `${student?.name || attempt.studentName || "Student"} · ${attempt.subjectName || quiz?.subjectName || "Subject"} → ${attempt.categoryName || quiz?.categoryName || "Subcategory"} · Quiz total ${Number(attempt.maxPoints || quiz?.totalPoints || 0).toFixed(1)} · Subcategory total ${category?.maxScore || "not set"}`;
+      els.manualGradeMessage.textContent = "";
+
+      els.manualGradeQuestions.innerHTML = (attempt.answers || []).map((answer, index) => {
+        const previous = (attempt.gradedQuestions || []).find((item) => item.questionId === answer.questionId);
+        const max = Number(answer.points || 0);
+        const points = Number(previous?.awardedPoints ?? 0);
+        const markedCorrect = previous?.markedCorrect === true || points >= max;
+        return `
+          <div class="question-card" data-grade-question="${escapeHtml(answer.questionId)}">
+            <div class="question-head">
+              <strong>Question ${index + 1}</strong>
+              <span class="pill open">Max ${max.toFixed(1)} pts</span>
+            </div>
+            <p style="line-height:1.6;margin-bottom:12px">${escapeHtml(answer.questionText || "Question")}</p>
+            <div class="answer-box">
+              <span class="meta">Student answer:</span><br>
+              ${escapeHtml(answer.answer || "No answer")}
+            </div>
+            <div class="grade-control-grid">
+              <label class="check-item">
+                <input type="checkbox" data-grade-correct="${escapeHtml(answer.questionId)}" ${markedCorrect ? "checked" : ""}>
+                <span>Mark correct</span>
+              </label>
+              <div class="field" style="margin:0">
+                <label>Points</label>
+                <input data-grade-points="${escapeHtml(answer.questionId)}" type="number" min="0" max="${max}" step="0.5" value="${points}" required>
+              </div>
+            </div>
+            <div class="field grade-feedback">
+              <label>Optional feedback</label>
+              <textarea data-grade-feedback="${escapeHtml(answer.questionId)}" maxlength="600">${escapeHtml(previous?.feedback || "")}</textarea>
+            </div>
+          </div>
+        `;
+      }).join("");
+      updateManualGradeTotal();
+      els.manualGradePanel.classList.remove("hidden");
+      els.manualGradePanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function updateManualGradeTotal() {
+      const total = [...els.manualGradeQuestions.querySelectorAll("[data-grade-points]")]
+        .reduce((sum, input) => sum + Number(input.value || 0), 0);
+      const max = Number(activeGradeAttempt?.maxPoints || 0);
+      els.manualGradeTotal.textContent = `${total.toFixed(1)} / ${max.toFixed(1)}`;
+    }
+
+    async function saveManualGrade(event) {
+      event.preventDefault();
+      if (!activeGradeAttempt) return;
       let score = 0;
-      const gradedQuestions = (attempt.answers || []).map((answer) => {
-        const correct = (key.answers || []).find((item) => item.questionId === answer.questionId);
-        const max = Number(correct?.points || answer.points || 0);
-        const matched = normalizeAnswer(answer.answer) === normalizeAnswer(correct?.correctAnswer);
-        const awardedPoints = matched ? max : 0;
+      const gradedQuestions = (activeGradeAttempt.answers || []).map((answer) => {
+        const max = Number(answer.points || 0);
+        const pointsInput = els.manualGradeQuestions.querySelector(`[data-grade-points="${CSS.escape(answer.questionId)}"]`);
+        const correctInput = els.manualGradeQuestions.querySelector(`[data-grade-correct="${CSS.escape(answer.questionId)}"]`);
+        const feedbackInput = els.manualGradeQuestions.querySelector(`[data-grade-feedback="${CSS.escape(answer.questionId)}"]`);
+        let awardedPoints = Number(pointsInput?.value || 0);
+        if (!Number.isFinite(awardedPoints)) awardedPoints = 0;
+        awardedPoints = Math.max(0, Math.min(max, awardedPoints));
         score += awardedPoints;
         return {
           questionId: answer.questionId,
           awardedPoints,
-          correctAnswer: correct?.correctAnswer || "",
-          matched
+          maxPoints: max,
+          markedCorrect: correctInput?.checked === true,
+          feedback: feedbackInput?.value.trim() || ""
         };
       });
-      const confirmed = confirm(`Auto-grade this attempt?\n\nScore: ${score.toFixed(1)} / ${Number(attempt.maxPoints || 0).toFixed(1)}\n\nExact-answer matching is used.`);
-      if (!confirmed) return;
-      await updateDoc(doc(db, "quizAttempts", attempt.id), {
+      await updateDoc(doc(db, "quizAttempts", activeGradeAttempt.id), {
         status: "graded",
         score,
         gradedQuestions,
@@ -924,16 +1012,17 @@
         gradedByName: profile.name || profile.username || "Admin",
         gradedAt: serverTimestamp()
       });
+      activeGradeAttempt = null;
+      els.manualGradePanel.classList.add("hidden");
       await loadAdminData();
     }
 
     async function deleteQuiz(quizId) {
-      const confirmed = confirm("Delete this quiz, its hidden answer key, and all attempts for it?");
+      const confirmed = confirm("Delete this quiz and all attempts for it?");
       if (!confirmed) return;
       const attempts = data.attempts.filter((attempt) => attempt.quizId === quizId);
       await Promise.all([
         deleteDoc(doc(db, "quizzes", quizId)),
-        deleteDoc(doc(db, "quizAnswerKeys", quizId)).catch(() => {}),
         ...attempts.map((attempt) => deleteDoc(doc(db, "quizAttempts", attempt.id)))
       ]);
       await loadAdminData();
@@ -949,9 +1038,10 @@
     });
 
     els.quizSubject.addEventListener("change", syncQuizSelects);
+    els.quizCategory.addEventListener("change", updateCategoryPointInfo);
     els.addQuestionButton.addEventListener("click", () => {
       collectQuestionsFromDom();
-      questions.push({ id: uid(), text: "", points: 1, correctAnswer: "" });
+      questions.push({ id: uid(), text: "", points: 1 });
       renderQuestionBuilder();
     });
     els.questionBuilder.addEventListener("click", (event) => {
@@ -961,6 +1051,7 @@
       questions = questions.filter((question) => question.id !== removeId);
       renderQuestionBuilder();
     });
+    els.questionBuilder.addEventListener("input", updateCategoryPointInfo);
     els.publishQuizButton.addEventListener("click", publishQuiz);
     els.refreshButton.addEventListener("click", loadEverything);
     els.adminQuizList.addEventListener("click", (event) => {
@@ -969,7 +1060,7 @@
     });
     els.attemptTable.addEventListener("click", (event) => {
       const id = event.target.dataset.gradeAttempt;
-      if (id) gradeAttempt(id);
+      if (id) startManualGrade(id);
     });
     els.studentQuizList.addEventListener("click", (event) => {
       const id = event.target.dataset.startQuiz;
@@ -979,6 +1070,22 @@
       activeQuiz = null;
       els.takeQuizPanel.classList.add("hidden");
       els.availablePanel.classList.remove("hidden");
+    });
+    els.manualGradeQuestions.addEventListener("input", updateManualGradeTotal);
+    els.manualGradeQuestions.addEventListener("change", (event) => {
+      const questionId = event.target.dataset.gradeCorrect;
+      if (!questionId) return;
+      const pointsInput = els.manualGradeQuestions.querySelector(`[data-grade-points="${CSS.escape(questionId)}"]`);
+      const answer = activeGradeAttempt?.answers?.find((item) => item.questionId === questionId);
+      if (pointsInput && answer) {
+        pointsInput.value = event.target.checked ? Number(answer.points || 0) : 0;
+        updateManualGradeTotal();
+      }
+    });
+    els.manualGradeForm.addEventListener("submit", saveManualGrade);
+    els.cancelManualGradeButton.addEventListener("click", () => {
+      activeGradeAttempt = null;
+      els.manualGradePanel.classList.add("hidden");
     });
     els.takeQuizForm.addEventListener("submit", submitQuiz);
 

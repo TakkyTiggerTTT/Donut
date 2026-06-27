@@ -6,7 +6,7 @@
   <title>Superstar School · Profile</title>
   <link rel="stylesheet" href="./school-shell.css" />
   <style>
-    /* ACTUAL PROFILE FIX V2 - not the old blank file */
+    /* PROFILE NO EMAIL V4 - email hidden from profile page */
     :root{
       --bg:#070a14;--panel:#11182c;--panel2:#18223b;--border:rgba(255,255,255,.16);--soft:rgba(255,255,255,.07);
       --text:#fff;--muted:#aeb9d2;--accent:#ffb74d;--accentText:#231400;--green:#79e8ad;--red:#ff8e8e;--blue:#91aaff;
@@ -67,7 +67,6 @@
             <div id="profileName" class="name">Student</div>
             <div id="profileClass" class="muted">Class</div>
             <div id="profileRole" class="pill">Student</div>
-            <p id="profileEmail" class="muted" style="margin-top:12px"></p>
             <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px">
               <span id="profileRank" class="pill blue">Rank: —</span>
               <span id="profilePoints" class="pill green">0 points</span>
@@ -177,7 +176,7 @@
     function error(text){ $("errorBox").textContent = text; $("errorBox").classList.remove("hidden"); }
     function clearError(){ $("errorBox").classList.add("hidden"); $("errorBox").textContent = ""; }
     function className(id){ return classes.find((c)=>c.id === id)?.name || classes.find((c)=>c.name === id)?.name || id || "No class"; }
-    function nameOf(u){ return u?.name || u?.username || u?.email || "Student"; }
+    function nameOf(u){ return u?.name || u?.username || "Student"; }
 
     window.addEventListener("error", (event) => error("Profile page JavaScript error:\n" + (event.message || event.error || "Unknown error")));
     window.addEventListener("unhandledrejection", (event) => error("Profile page promise error:\n" + (event.reason?.message || event.reason || "Unknown error")));
@@ -228,7 +227,6 @@
       $("profileName").textContent = nameOf(user);
       $("profileClass").textContent = className(user.classId);
       $("profileRole").textContent = labelRole(user.role);
-      $("profileEmail").textContent = user.email || user.username || "";
       $("pointsStat").textContent = fmt(st.points);
       $("completedStat").textContent = String(st.graded.length);
       $("pendingStat").textContent = String(st.pending.length);
@@ -240,7 +238,6 @@
         row("👤","Name",esc(nameOf(user))),
         row("🎓","Class",esc(className(user.classId))),
         row("🔐","Role",esc(labelRole(user.role))),
-        row("✉️","Email / username",esc(user.email || user.username || "Not set")),
         row("🏆","Leaderboard rank",ranks.has(user.id) ? `#${ranks.get(user.id)}` : "No rank yet")
       ].join("");
 
@@ -276,7 +273,7 @@
       $("studentSelect").innerHTML = students.length ? students.map((s)=>`<option value="${esc(s.id)}">${esc(nameOf(s))} — ${esc(className(s.classId))}</option>`).join("") : `<option value="">No students</option>`;
 
       const term = ($("studentSearch").value || "").toLowerCase().trim();
-      const visible = students.filter((s)=>!term || `${nameOf(s)} ${s.email||""} ${s.username||""} ${className(s.classId)}`.toLowerCase().includes(term));
+      const visible = students.filter((s)=>!term || `${nameOf(s)} ${s.username||""} ${className(s.classId)}`.toLowerCase().includes(term));
       $("studentList").innerHTML = "";
       if(!visible.length){ $("studentList").innerHTML = `<div class="empty">No students found.</div>`; return; }
       visible.forEach((s)=>{

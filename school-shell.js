@@ -55,6 +55,7 @@ function navItems(role) {
     ["grades.html", "📊", "Grades", true],
     ["announcements.html", "📢", "Announcements", true],
     ["events.html", "📅", "Events", true],
+    ["calendar.html", "🗓️", "Calendar", true],
     ["quiz.html", "📝", "Quizzes", true],
     ["notifications.html", "🔔", "Notifications", true],
     ["profile.html", "👤", "Profile", true],

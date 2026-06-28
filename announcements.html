@@ -881,6 +881,16 @@
             </div>
 
             <div class="selection-block">
+              <label class="checkbox-item" style="align-items: center;">
+                <input id="announcementEveryone" type="checkbox">
+                <span>
+                  <strong>Send to everyone</strong>
+                  <small>This sends the announcement to every student account.</small>
+                </span>
+              </label>
+            </div>
+
+            <div class="selection-block" id="classSelectionBlock">
               <div class="selection-header">
                 <h4>Grades / Classes</h4>
                 <div class="inline-actions">
@@ -892,7 +902,7 @@
               <div class="checkbox-list" id="classList"></div>
             </div>
 
-            <div class="selection-block">
+            <div class="selection-block" id="studentSelectionBlock">
               <div class="selection-header">
                 <h4>Individual Students</h4>
                 <div class="inline-actions">
@@ -1031,6 +1041,9 @@
       publishAt: document.getElementById("publishAt"),
       announcementHideNameField: document.getElementById("announcementHideNameField"),
       announcementHideName: document.getElementById("announcementHideName"),
+      announcementEveryone: document.getElementById("announcementEveryone"),
+      classSelectionBlock: document.getElementById("classSelectionBlock"),
+      studentSelectionBlock: document.getElementById("studentSelectionBlock"),
       addImagesButton: document.getElementById("addImagesButton"),
       imageStatus: document.getElementById("imageStatus"),
       imagePreviewGrid: document.getElementById("imagePreviewGrid"),
@@ -1400,6 +1413,10 @@
     }
 
 function targetText(announcement) {
+      if (announcement.isEveryone === true || announcement.audience === "everyone") {
+        return "Everyone";
+      }
+
       const groups = [];
       const classes = Array.isArray(announcement.classNames) ? announcement.classNames : [];
       const students = Array.isArray(announcement.studentNames) ? announcement.studentNames : [];
@@ -1497,19 +1514,29 @@ function targetText(announcement) {
     }
 
     async function loadStudentView() {
-      const announcementsQuery = query(
+      const targetedAnnouncementsQuery = query(
         collection(db, "announcements"),
         where("recipientIds", "array-contains", auth.currentUser.uid)
       );
+      const everyoneAnnouncementsQuery = query(
+        collection(db, "announcements"),
+        where("isEveryone", "==", true)
+      );
 
-      const [announcementsSnapshot, classSnapshot] = await Promise.all([
-        getDocs(announcementsQuery),
+      const [targetedSnapshot, everyoneSnapshot, classSnapshot] = await Promise.all([
+        getDocs(targetedAnnouncementsQuery),
+        getDocs(everyoneAnnouncementsQuery),
         currentProfile.classId
           ? getDoc(doc(db, "classes", currentProfile.classId))
           : Promise.resolve(null)
       ]);
 
-      const announcements = sortAnnouncements(snapshotToArray(announcementsSnapshot).filter(isVisibleAnnouncement));
+      const announcementMap = new Map();
+      [...snapshotToArray(targetedSnapshot), ...snapshotToArray(everyoneSnapshot)]
+        .filter(isVisibleAnnouncement)
+        .forEach((announcement) => announcementMap.set(announcement.id, announcement));
+
+      const announcements = sortAnnouncements([...announcementMap.values()]);
       const resolvedClassName = classSnapshot?.exists()
         ? classSnapshot.data().name
         : "No class";
@@ -1520,15 +1547,18 @@ function targetText(announcement) {
 
       elements.studentAnnouncementList.innerHTML = announcements.length
         ? announcements.map((announcement) => {
+            const everyoneTarget = announcement.isEveryone === true || announcement.audience === "everyone";
             const personal = Array.isArray(announcement.studentIds) &&
               announcement.studentIds.includes(auth.currentUser.uid);
             const classTarget = Array.isArray(announcement.classIds) &&
               announcement.classIds.includes(currentProfile.classId);
-            const audienceLabel = personal && classTarget
-              ? "Personal and class announcement"
-              : personal
-                ? "Personal announcement"
-                : "Class announcement";
+            const audienceLabel = everyoneTarget
+              ? "School announcement"
+              : personal && classTarget
+                ? "Personal and class announcement"
+                : personal
+                  ? "Personal announcement"
+                  : "Class announcement";
 
             return `
               <article class="announcement-card">
@@ -1550,6 +1580,18 @@ function targetText(announcement) {
         : '<div class="empty-box">You do not have any announcements yet.</div>';
 
       ensureAnnouncementImagesLoad(elements.studentAnnouncementList);
+    }
+
+    function updateEveryoneTargetControls() {
+      const enabled = elements.announcementEveryone?.checked === true;
+      [elements.classSelectionBlock, elements.studentSelectionBlock].forEach((block) => {
+        if (!block) return;
+        block.style.opacity = enabled ? "0.42" : "1";
+        block.querySelectorAll('input[type="checkbox"], button').forEach((control) => {
+          control.disabled = enabled;
+          if (enabled && control.type === "checkbox") control.checked = false;
+        });
+      });
     }
 
     function checkedValues(container) {
@@ -1604,12 +1646,15 @@ function targetText(announcement) {
       const title = elements.announcementTitle.value.trim();
       const messageHtml = sanitizeRichHtml(elements.announcementEditor.innerHTML);
       const message = plainTextFromHtml(messageHtml);
-      const classIds = checkedValues(elements.classList);
-      const studentIds = checkedValues(elements.studentList);
+      const sendToEveryone = elements.announcementEveryone?.checked === true;
+      const classIds = sendToEveryone ? [] : checkedValues(elements.classList);
+      const studentIds = sendToEveryone ? [] : checkedValues(elements.studentList);
       const classStudentIds = adminData.students
         .filter((student) => classIds.includes(student.classId))
         .map((student) => student.id);
-      const recipientIds = [...new Set([...classStudentIds, ...studentIds])];
+      const recipientIds = sendToEveryone
+        ? [...new Set(adminData.students.map((student) => student.id))]
+        : [...new Set([...classStudentIds, ...studentIds])];
       const scheduledDate = scheduledDateValue();
       const status = mode === "draft" ? "draft" : (elements.postMode.value === "scheduled" ? "scheduled" : "published");
 
@@ -1627,15 +1672,17 @@ function targetText(announcement) {
         return;
       }
 
-      if (mode !== "draft" && !classIds.length && !studentIds.length) {
-        elements.announcementMessageBox.textContent = "Select at least one grade/class or individual student.";
+      if (mode !== "draft" && !sendToEveryone && !classIds.length && !studentIds.length) {
+        elements.announcementMessageBox.textContent = "Select everyone, at least one grade/class, or at least one individual student.";
         elements.publishButton.disabled = false;
         elements.saveDraftButton.disabled = false;
         return;
       }
 
       if (mode !== "draft" && !recipientIds.length) {
-        elements.announcementMessageBox.textContent = "The selected classes do not contain students. Select an individual student or add students first.";
+        elements.announcementMessageBox.textContent = sendToEveryone
+          ? "There are no student accounts yet, so there is nobody to send this announcement to."
+          : "The selected classes do not contain students. Select an individual student or add students first.";
         elements.publishButton.disabled = false;
         elements.saveDraftButton.disabled = false;
         return;
@@ -1647,8 +1694,10 @@ function targetText(announcement) {
           message,
           messageHtml,
           images: pendingImages.map((image) => image.dataUrl),
+          audience: sendToEveryone ? "everyone" : "targeted",
+          isEveryone: sendToEveryone,
           classIds,
-          classNames: classIds.map((id) => className(id)),
+          classNames: sendToEveryone ? ["Everyone"] : classIds.map((id) => className(id)),
           studentIds,
           studentNames: studentIds.map((id) => adminData.students.find((student) => student.id === id)?.name || "Selected student"),
           recipientIds,
@@ -1667,6 +1716,7 @@ function targetText(announcement) {
         elements.announcementForm.reset();
         elements.postMode.value = "now";
         elements.scheduleField.classList.add("hidden");
+        updateEveryoneTargetControls();
         updateAnnouncementPrivacyControl();
         elements.announcementEditor.innerHTML = "";
         pendingImages = [];
@@ -1677,7 +1727,9 @@ function targetText(announcement) {
           ? "Draft saved."
           : status === "scheduled"
             ? `Announcement scheduled for ${scheduledDate.toLocaleString()}.`
-            : `Announcement published to ${recipientIds.length} student${recipientIds.length === 1 ? "" : "s"}.`;
+            : sendToEveryone
+              ? `Announcement published to everyone (${recipientIds.length} student${recipientIds.length === 1 ? "" : "s"}).`
+              : `Announcement published to ${recipientIds.length} student${recipientIds.length === 1 ? "" : "s"}.`;
         await loadAdminData();
       } catch (error) {
         elements.announcementMessageBox.textContent = errorMessage(error);
@@ -1788,6 +1840,8 @@ function targetText(announcement) {
         ? `${pendingImages.length} picture${pendingImages.length === 1 ? "" : "s"} ready.`
         : "";
     });
+
+    elements.announcementEveryone?.addEventListener("change", updateEveryoneTargetControls);
 
     elements.announcementForm.addEventListener("click", (event) => {
       const action = event.target.dataset.checkAction;

@@ -18,6 +18,7 @@ const db = getFirestore(app);
 const page = (location.pathname.split("/").pop() || "index.html").toLowerCase();
 const isOwnerPage = page === "owner.html";
 const isMaintenancePage = page === "maintenance.html";
+const isLoginPage = page === "index.html";
 
 let currentProfile = null;
 let currentSettings = {
@@ -25,7 +26,6 @@ let currentSettings = {
   wipMessage: "Superstar School is being updated. Please check again later."
 };
 let authResolved = false;
-let profileResolved = false;
 let unsubscribeProfile = null;
 
 function isManagementRole(role) {
@@ -43,34 +43,6 @@ function roleLabel(role) {
   return "Student";
 }
 
-function applyTheme() {
-  const accent = currentSettings.accentColor || "#ffb74d";
-  const mode = currentSettings.themeMode || "dark";
-  document.documentElement.style.setProperty("--accent", accent);
-  document.documentElement.style.setProperty("--accentText", "#251500");
-  document.documentElement.style.setProperty("--accent-text", "#251500");
-  document.documentElement.style.setProperty("--donut-shell-accent", accent);
-  document.documentElement.style.setProperty("--donut-shell-accent-text", "#251500");
-  document.body?.classList.toggle("superstar-light-theme", mode === "light");
-}
-
-function applyAvatar(el, profile) {
-  if (!el) return;
-  const name = profile?.name || profile?.username || "User";
-  const initial = name.trim().charAt(0).toUpperCase() || "S";
-  const photo = profile?.photoDataUrl || profile?.photoUrl || "";
-  if (photo) {
-    el.textContent = "";
-    el.style.backgroundImage = `url("${String(photo).replaceAll('"', '%22')}")`;
-    el.style.backgroundSize = "cover";
-    el.style.backgroundPosition = "center";
-  } else {
-    el.style.backgroundImage = "";
-    el.textContent = initial;
-  }
-}
-
-
 function activeFor(file) {
   return page === file ? " active" : "";
 }
@@ -80,7 +52,7 @@ function navItems(role) {
   const management = isManagementRole(role);
   const items = [
     ["dashboard.html", "🏫", "Dashboard", true],
-    ["index.html", "📊", "Grades", true],
+    ["grades.html", "📊", "Grades", true],
     ["announcements.html", "📢", "Announcements", true],
     ["events.html", "📅", "Events", true],
     ["quiz.html", "📝", "Quizzes", true],
@@ -131,9 +103,9 @@ function enforceAccess() {
     // owner.html must stay open so owners/co-owners can sign in and disable WIP.
     if (isOwnerPage) return;
 
-    // If a signed-in user is still loading, do not redirect yet.
-    // This prevents owners/co-owners from being bounced to maintenance/dashboard before their role is read.
-    if (auth.currentUser && !profileResolved) return;
+    // index.html is the login page. Keep it open so users can sign in.
+    // The login page itself will send non-owner users to maintenance when WIP is on.
+    if (isLoginPage) return;
 
     // Owners and co-owners may still access the site while WIP mode is on.
     if (isManagementRole(currentProfile?.role)) return;
@@ -153,7 +125,6 @@ function enforceAccess() {
   if (
     isOwnerPage &&
     authResolved &&
-    profileResolved &&
     auth.currentUser &&
     !isManagementRole(currentProfile?.role)
   ) {
@@ -189,7 +160,7 @@ function updateShell(profile) {
   const profileRole = sidebar.querySelector(".donut-shell-profile-role");
   const nav = sidebar.querySelector(".donut-shell-nav");
 
-  applyAvatar(avatar, profile);
+  if (avatar) avatar.textContent = initial;
   if (profileName) profileName.textContent = name;
   if (profileRole) profileRole.textContent = roleLabel(profile.role);
   if (nav) {
@@ -226,12 +197,12 @@ function injectShell(profile) {
     <button class="donut-shell-menu-button" id="donutShellMenuButton" type="button" aria-label="Open school menu">☰</button>
     <aside class="donut-shell-sidebar" id="donutShellSidebar">
       <div class="donut-shell-brand">
-        <span class="donut-shell-brand-mark"><img src="./star-logo.png" alt="Superstar School logo"></span>
+        <span class="donut-shell-brand-mark" aria-label="Superstar logo"></span>
         <span>Superstar School</span>
       </div>
 
       <div class="donut-shell-profile">
-        <div class="donut-shell-avatar"></div>
+        <div class="donut-shell-avatar">${initial}</div>
         <div style="min-width:0">
           <div class="donut-shell-profile-name"></div>
           <div class="donut-shell-profile-role">${roleLabel(profile.role)}</div>
@@ -252,7 +223,6 @@ function injectShell(profile) {
 
   document.body.append(...wrapper.children);
   document.querySelector(".donut-shell-profile-name").textContent = name;
-  applyAvatar(document.querySelector(".donut-shell-avatar"), profile);
   document.body.classList.add("donut-shell-active");
 
   document.getElementById("donutShellMenuButton")?.addEventListener("click", openShell);
@@ -289,7 +259,6 @@ function listenToProfile(user) {
   }
 
   if (!user) {
-    profileResolved = true;
     currentProfile = null;
     updateShell(null);
     enforceAccess();
@@ -297,13 +266,9 @@ function listenToProfile(user) {
     return;
   }
 
-  profileResolved = false;
-
   unsubscribeProfile = onSnapshot(
     doc(db, "users", user.uid),
     async (snapshot) => {
-      profileResolved = true;
-
       if (!snapshot.exists()) {
         currentProfile = null;
         updateShell(null);
@@ -324,7 +289,6 @@ function listenToProfile(user) {
     },
     async (error) => {
       console.warn("Could not listen for shell profile:", error);
-      profileResolved = true;
       currentProfile = null;
       updateShell(null);
       dispatchProfile();
@@ -339,7 +303,6 @@ onSnapshot(
       ? { ...currentSettings, ...snapshot.data() }
       : currentSettings;
 
-    applyTheme();
     enforceAccess();
   },
   (error) => {
@@ -349,11 +312,8 @@ onSnapshot(
 
 onAuthStateChanged(auth, (user) => {
   authResolved = true;
-  profileResolved = false;
   listenToProfile(user);
 });
-
-applyTheme();
 
 // Let page code ask the shell to refresh without reloading the page.
 window.DonutShell = {

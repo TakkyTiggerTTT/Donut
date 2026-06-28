@@ -1144,23 +1144,28 @@
     }
 
     async function loadStudentData(userId) {
-      const [classesSnap, subjectsSnap, categoriesSnap, gradesSnap, announcementsSnap, savesSnap, quizzesSnap] =
+      const [classesSnap, subjectsSnap, categoriesSnap, gradesSnap, announcementsSnap, everyoneAnnouncementsSnap, savesSnap, quizzesSnap] =
         await Promise.all([
           getDocs(collection(db, "classes")),
           getDocs(collection(db, "subjects")),
           getDocs(collection(db, "categories")),
           getDocs(query(collection(db, "grades"), where("studentId", "==", userId))),
           getDocs(query(collection(db, "announcements"), where("recipientIds", "array-contains", userId))),
+          getDocs(query(collection(db, "announcements"), where("isEveryone", "==", true))),
           getDocs(query(collection(db, "savelists"), where("ownerId", "==", userId))),
           getDocs(query(collection(db, "quizzes"), where("recipientIds", "array-contains", userId)))
         ]);
+
+      const announcementMap = new Map();
+      [...snapshotToArray(announcementsSnap), ...snapshotToArray(everyoneAnnouncementsSnap)]
+        .forEach((announcement) => announcementMap.set(announcement.id, announcement));
 
       return {
         classes: snapshotToArray(classesSnap),
         subjects: snapshotToArray(subjectsSnap),
         categories: snapshotToArray(categoriesSnap),
         grades: snapshotToArray(gradesSnap),
-        announcements: snapshotToArray(announcementsSnap),
+        announcements: [...announcementMap.values()],
         saves: snapshotToArray(savesSnap),
         quizzes: snapshotToArray(quizzesSnap)
       };

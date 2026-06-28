@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Superstar class calendar by ICT date">
   <title>Superstar Class Calendar</title>
-  <!-- SUPERSTAR CALENDAR ICT UPDATE: date-only class/subcategory calendar -->
+  <!-- SUPERSTAR CALENDAR ALL STUDENTS UPDATE: date-only class/subcategory calendar with all-students option -->
 
   <style>
     :root {
@@ -290,7 +290,7 @@
         <h1>Calendar</h1>
         <p class="subtitle">
           Admins can choose the ICT date for each class and grade subcategory. No time is saved.
-          Students only see the calendar items for their grade/class.
+          Students see their own class calendar items plus items sent to all students.
         </p>
       </div>
       <div class="top-actions">
@@ -318,7 +318,7 @@
       <aside class="panel">
         <section class="admin-panel hidden" id="adminPanel">
           <h2 id="formTitle">Add calendar day</h2>
-          <p class="panel-note">Pick the ICT date, class, subject, and grade subcategory. There is no time field.</p>
+          <p class="panel-note">Pick the ICT date, class/all students, subject, and grade subcategory. There is no time field.</p>
           <form class="form-grid" id="scheduleForm">
             <div class="field">
               <label for="scheduleDate">Date (ICT)</label>
@@ -328,6 +328,7 @@
             <div class="field">
               <label for="scheduleClass">Class / grade</label>
               <select id="scheduleClass" required></select>
+              <p class="small-note">Choose <strong>All students</strong> if every student should see this calendar item.</p>
             </div>
             <div class="field">
               <label for="scheduleSubject">Subject</label>
@@ -484,6 +485,7 @@
     }
 
     function className(classId) {
+      if (classId === "__all__") return "All students";
       return data.classes.find((item) => item.id === classId)?.name || "Class";
     }
 
@@ -497,7 +499,7 @@
 
     function visibleForClass(item, classId) {
       const mode = item.visibilityMode || "all";
-      if (!classId) return true;
+      if (!classId || classId === "__all__") return true;
       if (mode === "all" || mode === "inherit") return true;
       return Array.isArray(item.classIds) && item.classIds.includes(classId);
     }
@@ -535,7 +537,7 @@
         classes: sortByName(snapshotToArray(classesSnap)),
         subjects: sortByName(snapshotToArray(subjectsSnap)),
         categories: sortByName(snapshotToArray(categoriesSnap)),
-        entries: isStaff() ? allEntries : allEntries.filter((entry) => entry.classId === profile.classId)
+        entries: isStaff() ? allEntries : allEntries.filter((entry) => entry.isEveryone === true || entry.classId === profile.classId)
       };
     }
 
@@ -545,7 +547,7 @@
         return;
       }
       els.adminPanel.classList.remove("hidden");
-      fillSelect(els.scheduleClass, data.classes, "Select class / grade");
+      fillSelect(els.scheduleClass, [{ id: "__all__", name: "All students" }, ...data.classes], "Select class / grade");
       els.scheduleDate.value = selectedDate;
       updateSubjectOptions();
     }
@@ -726,7 +728,8 @@
         return;
       }
 
-      const selectedClass = data.classes.find((item) => item.id === classId);
+      const isEveryone = classId === "__all__";
+      const selectedClass = isEveryone ? { id: "__all__", name: "All students" } : data.classes.find((item) => item.id === classId);
       const selectedSubject = data.subjects.find((item) => item.id === subjectId);
       const selectedCategory = data.categories.find((item) => item.id === categoryId);
       if (!selectedClass || !selectedSubject || !selectedCategory) {
@@ -737,8 +740,9 @@
       const payload = {
         date,
         timeZone: ICT_TZ,
+        isEveryone,
         classId,
-        className: selectedClass.name || "Class",
+        className: selectedClass.name || (isEveryone ? "All students" : "Class"),
         subjectId,
         subjectName: selectedSubject.name || "Subject",
         categoryId,

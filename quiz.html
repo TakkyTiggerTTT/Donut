@@ -143,6 +143,9 @@
     .question-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
     .question-image { max-width: 100%; border-radius: 14px; border: 1px solid var(--border); margin: 10px 0 14px; display:block; }
     .timer-box { margin: 12px 0; padding: 12px 14px; border: 1px solid rgba(255,183,77,.35); border-radius: 13px; background: rgba(255,183,77,.1); color: var(--accent); font-weight: 900; }
+    .tts-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin: 10px 0 14px; }
+    .tts-help { color: var(--muted); font-size:.9rem; line-height:1.45; }
+    .read-question-button { padding: 8px 11px; font-size: .88rem; }
 
     .tabbar { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
     .tab {
@@ -425,9 +428,15 @@
             <h2 id="takeQuizTitle">Take quiz</h2>
             <p class="note" id="takeQuizMeta"></p>
           </div>
-          <button class="button secondary" id="cancelTakeButton" type="button">Cancel</button>
+          <div class="question-actions">
+            <button class="button secondary" id="stopTtsButton" type="button">⏹ Stop reading</button>
+            <button class="button secondary" id="cancelTakeButton" type="button">Cancel</button>
+          </div>
         </div>
         <div class="timer-box hidden" id="quizTimerBox">No timer</div>
+        <div class="tts-row">
+          <span class="tts-help">Use 🔊 Read question to hear each question and choices aloud.</span>
+        </div>
         <form id="takeQuizForm">
           <div id="takeQuestions"></div>
           <button class="button accent full" type="submit">Submit quiz</button>
@@ -514,6 +523,7 @@
       takeQuizMeta: document.getElementById("takeQuizMeta"),
       quizTimerBox: document.getElementById("quizTimerBox"),
       takeQuestions: document.getElementById("takeQuestions"),
+      stopTtsButton: document.getElementById("stopTtsButton"),
       takeQuizForm: document.getElementById("takeQuizForm"),
       takeMessage: document.getElementById("takeMessage"),
       cancelTakeButton: document.getElementById("cancelTakeButton"),
@@ -962,6 +972,44 @@
       }).join("");
     }
 
+    function supportsSpeech() {
+      return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+    }
+
+    function stopQuizSpeech() {
+      if (supportsSpeech()) window.speechSynthesis.cancel();
+    }
+
+    function speakQuizText(text) {
+      const cleanText = String(text || "").replace(/\s+/g, " ").trim();
+      if (!cleanText) return;
+      if (!supportsSpeech()) {
+        alert("Text to speech is not supported in this browser.");
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = "en-US";
+      utterance.rate = 0.92;
+      utterance.pitch = 1;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function speechTextForQuestion(question, index) {
+      const type = normalizeQuestionType(question.type);
+      const choices = choicesForQuestion(question);
+      const parts = [`Question ${index + 1}.`, String(question.text || "Question")];
+      if (type === "choice" && choices.length) {
+        parts.push("Choices.");
+        choices.forEach((choice, choiceIndex) => parts.push(`Choice ${choiceIndex + 1}. ${choice}.`));
+      } else if (type === "truefalse") {
+        parts.push("Choose True or False.");
+      } else {
+        parts.push("Write your answer.");
+      }
+      return parts.join(" ");
+    }
+
     function renderStudent() {
       const visibleAttempts = activeStudentAttempts();
       const available = data.quizzes.filter((quiz) => {
@@ -1140,6 +1188,7 @@
       els.takeQuestions.innerHTML = (quiz.questions || []).map((question, index) => {
         const type = normalizeQuestionType(question.type);
         const answerChoices = choicesForQuestion(question);
+        const speechText = speechTextForQuestion(question, index);
         const answerInput = type === "choice" || type === "truefalse"
           ? `
             <div class="field">
@@ -1164,7 +1213,10 @@
           <div class="question-card">
             <div class="question-head">
               <strong>Question ${index + 1}</strong>
-              <span class="pill open">${Number(question.points || 0).toFixed(1)} pts</span>
+              <div class="question-actions">
+                <button class="button secondary read-question-button" type="button" data-speak-question="${escapeHtml(speechText)}">🔊 Read question</button>
+                <span class="pill open">${Number(question.points || 0).toFixed(1)} pts</span>
+              </div>
             </div>
             <p style="line-height:1.6;margin-bottom:12px">${escapeHtml(question.text)}</p>
             ${question.imageUrl ? `<img class="question-image" src="${escapeHtml(question.imageUrl)}" alt="Question image">` : ""}
@@ -1248,6 +1300,7 @@
         await setDoc(doc(db, "quizAttempts", attemptId), payload);
 
         clearQuizTimer();
+        stopQuizSpeech();
         activeQuiz = null;
         els.takeQuizPanel.classList.add("hidden");
         els.availablePanel.classList.remove("hidden");
@@ -1486,7 +1539,13 @@
       const id = event.target.dataset.startQuiz;
       if (id) startQuiz(id);
     });
+    els.takeQuestions.addEventListener("click", (event) => {
+      const text = event.target.dataset.speakQuestion;
+      if (text) speakQuizText(text);
+    });
+    els.stopTtsButton.addEventListener("click", stopQuizSpeech);
     els.cancelTakeButton.addEventListener("click", () => {
+      stopQuizSpeech();
       clearQuizTimer();
       activeQuiz = null;
       els.takeQuizPanel.classList.add("hidden");
@@ -1500,6 +1559,7 @@
       els.manualGradePanel.classList.add("hidden");
     });
     els.takeQuizForm.addEventListener("submit", submitQuiz);
+    window.addEventListener("beforeunload", stopQuizSpeech);
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {

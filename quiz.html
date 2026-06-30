@@ -144,6 +144,9 @@
     .question-image { max-width: 100%; border-radius: 14px; border: 1px solid var(--border); margin: 10px 0 14px; display:block; }
     .timer-box { margin: 12px 0; padding: 12px 14px; border: 1px solid rgba(255,183,77,.35); border-radius: 13px; background: rgba(255,183,77,.1); color: var(--accent); font-weight: 900; }
     .tts-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin: 10px 0 14px; }
+    .tts-setting { display:flex; align-items:center; gap:8px; min-width: 190px; color:#dce4f7; font-size:.9rem; font-weight:800; }
+    .tts-setting input { width: 104px; accent-color: var(--accent); }
+    .tts-value { min-width: 42px; color: var(--accent); text-align:right; }
     .tts-help { color: var(--muted); font-size:.9rem; line-height:1.45; }
     .read-question-button { padding: 8px 11px; font-size: .88rem; }
 
@@ -436,6 +439,16 @@
         <div class="timer-box hidden" id="quizTimerBox">No timer</div>
         <div class="tts-row">
           <span class="tts-help">Use 🔊 Read question to hear each question and choices aloud.</span>
+          <label class="tts-setting" for="ttsRate">
+            Speed
+            <input id="ttsRate" type="range" min="0.5" max="1.5" step="0.05" value="0.92">
+            <span class="tts-value" id="ttsRateValue">0.92x</span>
+          </label>
+          <label class="tts-setting" for="ttsVolume">
+            Volume
+            <input id="ttsVolume" type="range" min="0" max="1" step="0.05" value="1">
+            <span class="tts-value" id="ttsVolumeValue">100%</span>
+          </label>
         </div>
         <form id="takeQuizForm">
           <div id="takeQuestions"></div>
@@ -524,6 +537,10 @@
       quizTimerBox: document.getElementById("quizTimerBox"),
       takeQuestions: document.getElementById("takeQuestions"),
       stopTtsButton: document.getElementById("stopTtsButton"),
+      ttsRate: document.getElementById("ttsRate"),
+      ttsRateValue: document.getElementById("ttsRateValue"),
+      ttsVolume: document.getElementById("ttsVolume"),
+      ttsVolumeValue: document.getElementById("ttsVolumeValue"),
       takeQuizForm: document.getElementById("takeQuizForm"),
       takeMessage: document.getElementById("takeMessage"),
       cancelTakeButton: document.getElementById("cancelTakeButton"),
@@ -539,6 +556,8 @@
     let activeGradeAttempt = null;
     let quizTimerInterval = null;
     let quizDeadline = 0;
+    const TTS_DEFAULTS = { rate: 0.92, volume: 1 };
+    const TTS_SETTINGS_KEY = "superstarQuizTtsSettings";
 
     function isAdminRole(role) {
       return role === "admin" || role === "co-owner" || role === "owner";
@@ -976,6 +995,56 @@
       return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
     }
 
+    function clampNumber(value, min, max, fallback) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return fallback;
+      return Math.min(max, Math.max(min, number));
+    }
+
+    function loadTtsSettings() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(TTS_SETTINGS_KEY) || "{}");
+        return {
+          rate: clampNumber(saved.rate, 0.5, 1.5, TTS_DEFAULTS.rate),
+          volume: clampNumber(saved.volume, 0, 1, TTS_DEFAULTS.volume)
+        };
+      } catch (error) {
+        return { ...TTS_DEFAULTS };
+      }
+    }
+
+    function saveTtsSettings(settings) {
+      try {
+        localStorage.setItem(TTS_SETTINGS_KEY, JSON.stringify(settings));
+      } catch (error) {
+        // Speech still works if local storage is unavailable.
+      }
+    }
+
+    function getTtsSettings() {
+      return {
+        rate: clampNumber(els.ttsRate.value, 0.5, 1.5, TTS_DEFAULTS.rate),
+        volume: clampNumber(els.ttsVolume.value, 0, 1, TTS_DEFAULTS.volume)
+      };
+    }
+
+    function updateTtsSettingLabels(settings = getTtsSettings()) {
+      els.ttsRateValue.textContent = `${settings.rate.toFixed(2)}x`;
+      els.ttsVolumeValue.textContent = `${Math.round(settings.volume * 100)}%`;
+    }
+
+    function setTtsSettings(settings) {
+      els.ttsRate.value = settings.rate;
+      els.ttsVolume.value = settings.volume;
+      updateTtsSettingLabels(settings);
+    }
+
+    function handleTtsSettingsChange() {
+      const settings = getTtsSettings();
+      updateTtsSettingLabels(settings);
+      saveTtsSettings(settings);
+    }
+
     function stopQuizSpeech() {
       if (supportsSpeech()) window.speechSynthesis.cancel();
     }
@@ -989,8 +1058,10 @@
       }
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(cleanText);
+      const settings = getTtsSettings();
       utterance.lang = "en-US";
-      utterance.rate = 0.92;
+      utterance.rate = settings.rate;
+      utterance.volume = settings.volume;
       utterance.pitch = 1;
       window.speechSynthesis.speak(utterance);
     }
@@ -1523,6 +1594,8 @@
       }
     });
     els.questionBuilder.addEventListener("input", updateCategoryPointInfo);
+    setTtsSettings(loadTtsSettings());
+
     els.publishQuizButton.addEventListener("click", publishQuiz);
     els.refreshButton.addEventListener("click", loadEverything);
     els.adminQuizList.addEventListener("click", (event) => {
@@ -1543,6 +1616,8 @@
       const text = event.target.dataset.speakQuestion;
       if (text) speakQuizText(text);
     });
+    els.ttsRate.addEventListener("input", handleTtsSettingsChange);
+    els.ttsVolume.addEventListener("input", handleTtsSettingsChange);
     els.stopTtsButton.addEventListener("click", stopQuizSpeech);
     els.cancelTakeButton.addEventListener("click", () => {
       stopQuizSpeech();
